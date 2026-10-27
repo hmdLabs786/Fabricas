@@ -1,180 +1,153 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
-import { ArrowDownRight, Sparkles, BookOpen, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, ShieldCheck, Truck, Clock } from 'lucide-react';
+import WhatsAppIcon from '../common/WhatsAppIcon';
 
 export default function Hero() {
-  const { setIsLookbookOpen, setSelectedCategory } = useStore();
+  const { setCurrentView, setSelectedCategory, settings } = useStore();
 
-  const scrollToCatalog = () => {
-    const el = document.getElementById('catalog-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleExplore = () => {
+    setCurrentView('shop');
+    setSelectedCategory('All');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const rawPhone = settings.whatsappRaw || '923222567147';
+  const heroWhatsAppUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent('Assalam o Alaikum Fabricas Team! I would like to inquire about your latest clothing collection.')}`;
+
   return (
-    <section className="relative overflow-hidden border-b border-[#E4E4E0] dark:border-[#202025] bg-[#FAF9F6] dark:bg-[#0B0B0C] transition-smooth">
-      {/* Background Architectural Grid Lines */}
-      <div className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20">
-        <div className="max-w-7xl mx-auto h-full grid grid-cols-4 md:grid-cols-6 border-x border-[#E4E4E0] dark:border-[#202025]">
-          <div className="border-r border-[#E4E4E0] dark:border-[#202025] hidden md:block" />
-          <div className="border-r border-[#E4E4E0] dark:border-[#202025]" />
-          <div className="border-r border-[#E4E4E0] dark:border-[#202025]" />
-          <div className="border-r border-[#E4E4E0] dark:border-[#202025] hidden md:block" />
+    <section className="relative overflow-hidden bg-[#FAF8F5] border-b border-[#E7E5E0] pt-20 pb-16 sm:pt-28 sm:pb-20 lg:pt-36 lg:pb-24">
+      
+      {/* Luxurious Ambient Background Glowing Orbs */}
+      <div className="absolute -top-24 left-1/4 w-[500px] h-[400px] bg-gradient-to-tr from-[#0F766E]/12 via-[#C87D55]/8 to-transparent blur-[90px] rounded-full pointer-events-none animate-ambient-1" />
+      <div className="absolute -bottom-24 right-1/4 w-[550px] h-[420px] bg-gradient-to-bl from-[#C5A059]/10 via-[#0F766E]/10 to-transparent blur-[100px] rounded-full pointer-events-none animate-ambient-2" />
+
+      {/* Architectural Geometric Hairline Details */}
+      <div className="absolute top-10 left-10 hidden lg:block pointer-events-none opacity-40">
+        <div className="w-16 h-[1px] bg-[#C87D55]" />
+        <div className="w-[1px] h-16 bg-[#C87D55]" />
+        <span className="text-[10px] tracking-widest text-[#0F766E] uppercase font-mono block mt-2 ml-1">KHI • 24.8607° N</span>
+      </div>
+      <div className="absolute top-10 right-10 hidden lg:block pointer-events-none opacity-40 text-right">
+        <div className="w-16 h-[1px] bg-[#0F766E] ml-auto" />
+        <div className="w-[1px] h-16 bg-[#0F766E] ml-auto" />
+        <span className="text-[10px] tracking-widest text-[#C87D55] uppercase font-mono block mt-2 mr-1">EST. ATELIER</span>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        
+        {/* Karachi Luxury Heritage Badge */}
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-[#E7E5E0] shadow-sm animate-fade-in-up hover:border-[#0F766E]/40 transition-all duration-300">
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0F766E] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0F766E]"></span>
+          </span>
+          <span className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] text-[#1E2329] uppercase font-sans">
+            Karachi Atelier • Handcrafted Clothing
+          </span>
+          <Sparkles className="w-3.5 h-3.5 text-[#C87D55]" />
+        </div>
+
+        {/* Center Headline with Kinetic Elegance */}
+        <div className="mt-8 space-y-4 animate-fade-in-up [animation-delay:150ms]">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-display font-extrabold tracking-tight text-[#1E2329] leading-[1.1]">
+            Explore <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#0F766E] via-[#115E59] to-[#C87D55]">
+              Clothing
+              <svg className="absolute -bottom-2 left-0 w-full h-3 text-[#C87D55]/30 -z-10" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <path d="M0 15 Q 50 0 100 15" fill="none" stroke="currentColor" strokeWidth="4" />
+              </svg>
+            </span>
+          </h1>
+
+          <p className="text-base sm:text-lg md:text-xl text-[#576375] max-w-2xl mx-auto font-normal leading-relaxed pt-2">
+            Architecture for modern everyday silhouettes. Discover unstitched fabrics, ready-to-wear kurtas, and timeless everyday essentials tailored for the modern Pakistani aesthetic.
+          </p>
+        </div>
+
+        {/* Dual Luxury Action CTAs */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:300ms]">
+          {/* Primary Shop Button */}
+          <button
+            onClick={handleExplore}
+            className="w-full sm:w-auto shimmer-hover inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] font-semibold text-sm tracking-wider shadow-lg shadow-[#0F766E]/20 transition-all duration-300 hover:scale-103 active:scale-97 group"
+          >
+            <span>Explore Collection</span>
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
+
+          {/* Secondary Direct WhatsApp Order Button */}
+          <a
+            href={heroWhatsAppUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-4 rounded-full bg-white text-[#1E2329] border border-[#E7E5E0] hover:border-[#25D366] hover:text-[#0F766E] shadow-sm hover:shadow-md font-semibold text-sm tracking-wider transition-all duration-300 hover:scale-103 active:scale-97 group"
+          >
+            <WhatsAppIcon className="w-5 h-5 text-[#25D366] transition-transform duration-300 group-hover:scale-115" />
+            <span>Chat & Order on WhatsApp</span>
+          </a>
+        </div>
+
+        {/* Reassurance Guarantee Badges */}
+        <div className="mt-12 pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-[#576375] font-medium border-t border-[#E7E5E0]/70 max-w-2xl mx-auto animate-fade-in-up [animation-delay:450ms]">
+          <div className="flex items-center gap-2">
+            <Truck className="w-4 h-4 text-[#0F766E]" />
+            <span>Express Courier Delivery</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+            <span>Direct WhatsApp Booking</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#C87D55]" />
+            <span>Cash on Delivery across Pakistan</span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Infinite Smooth Luxury Marquee Ticker */}
+      <div className="mt-16 sm:mt-20 border-y border-[#E7E5E0] bg-white/70 backdrop-blur-sm py-3.5 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap flex items-center gap-8 text-xs font-semibold uppercase tracking-[0.25em] text-[#475569]">
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> KARACHI ATELIER
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#0F766E]">✦</span> PURE HANDCRAFTED FABRICS
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> CASH ON DELIVERY
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#0F766E]">✦</span> COMPLIMENTARY SHIPPING OVER RS. 3,500
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#25D366]">✦</span> WHATSAPP ORDERING: +92 3222567147
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> BESPOKE CUTS & SILHOUETTES
+          </span>
+          {/* Duplicate set for seamless continuous marquee */}
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> KARACHI ATELIER
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#0F766E]">✦</span> PURE HANDCRAFTED FABRICS
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> CASH ON DELIVERY
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#0F766E]">✦</span> COMPLIMENTARY SHIPPING OVER RS. 3,500
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#25D366]">✦</span> WHATSAPP ORDERING: +92 3222567147
+          </span>
+          <span className="flex items-center gap-3">
+            <span className="text-[#C87D55]">✦</span> BESPOKE CUTS & SILHOUETTES
+          </span>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
-          {/* Left Column: Bold Kinetic Editorial Typography & CTAs (7 Cols) */}
-          <div className="lg:col-span-7 flex flex-col justify-center space-y-6 md:space-y-8">
-            {/* Seasonal Badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 w-fit">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-ping" />
-              <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-[#0B0B0C] dark:text-[#FAF9F6] font-semibold">
-                AUTUMN / WINTER ARCHIVE • VOL. 04
-              </span>
-            </div>
-
-            {/* Kinetic Luxury Headline */}
-            <div className="space-y-1">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-editorial font-extrabold tracking-tight text-[#0B0B0C] dark:text-[#FAF9F6] leading-[0.95] uppercase">
-                Architecture <br />
-                <span className="font-serif-luxury italic font-normal lowercase tracking-normal text-[#D4AF37] dark:text-[#E5C378]">
-                  for the
-                </span>{' '}
-                Modern <br />
-                Silhouette.
-              </h1>
-            </div>
-
-            {/* Editorial Statement */}
-            <p className="text-base sm:text-lg text-[#52525B] dark:text-[#A1A1AA] max-w-xl font-light leading-relaxed">
-              Precision-tailored proportions engineered from pure Mongolian cashmere, virgin wool gabardine, and structured raw silk. Monolithic minimalism designed for kinetic form.
-            </p>
-
-            {/* Dual CTAs & Micro Information */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={scrollToCatalog}
-                className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-none bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] font-semibold text-xs uppercase tracking-[0.25em] hover:bg-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-[#0B0B0C] transition-all duration-300 shadow-lg active:scale-95"
-              >
-                <span>Explore Collection</span>
-                <ArrowDownRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-              </button>
-
-              <button
-                onClick={() => setIsLookbookOpen(true)}
-                className="group inline-flex items-center gap-2.5 px-7 py-4 rounded-none border border-[#0B0B0C] dark:border-[#FAF9F6] text-[#0B0B0C] dark:text-[#FAF9F6] font-medium text-xs uppercase tracking-[0.25em] hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300 active:scale-95 bg-transparent"
-              >
-                <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-                <span>View Lookbook</span>
-              </button>
-            </div>
-
-            {/* Architectural Details Ticker */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#E4E4E0] dark:border-[#202025]">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#0B0B0C] dark:text-[#FAF9F6]">
-                  Florence
-                </p>
-                <p className="text-[11px] text-[#71717A] dark:text-[#A1A1AA]">
-                  Bespoke Atelier Craft
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#0B0B0C] dark:text-[#FAF9F6]">
-                  100% Virgin
-                </p>
-                <p className="text-[11px] text-[#71717A] dark:text-[#A1A1AA]">
-                  Mongolian Raw Cashmere
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#0B0B0C] dark:text-[#FAF9F6]">
-                  Complimentary
-                </p>
-                <p className="text-[11px] text-[#71717A] dark:text-[#A1A1AA]">
-                  Global Express $250+
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Layered Editorial Hero Imagery (5 Cols) */}
-          <div className="lg:col-span-5 relative mt-6 lg:mt-0">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
-              
-              {/* Primary High-Fashion Card */}
-              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[#E4E4E0] dark:bg-[#1C1C1F] shadow-2xl border border-[#E4E4E0] dark:border-[#27272A] group">
-                <img
-                  src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=85"
-                  alt="Nocturne Atelier Autumn Winter Archive"
-                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                  loading="eager"
-                />
-                
-                {/* Subtle vignette gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0C]/80 via-transparent to-transparent opacity-60" />
-
-                {/* Floating Architectural Badge */}
-                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl glass-card border border-white/20 dark:border-white/10 text-white flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#D4AF37]">
-                      Look 01 • Cashmere Trench
-                    </span>
-                    <h2 className="text-sm font-editorial font-bold tracking-wider text-white">
-                      The Sartorial Overcoat
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setSelectedCategory('Outerwear');
-                      scrollToCatalog();
-                    }}
-                    className="p-2 rounded-full bg-white text-[#0B0B0C] hover:bg-[#D4AF37] transition-colors"
-                    aria-label="Shop Outerwear Look"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Offset Secondary Float Card (Editorial Detail) */}
-              <div className="absolute -bottom-8 -left-8 hidden sm:block w-48 aspect-[4/5] rounded-xl overflow-hidden shadow-2xl border-2 border-white dark:border-[#18181B] z-20 group">
-                <img
-                  src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80"
-                  alt="Pleated Wide Leg Drape Trousers detail"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                <div className="absolute top-2 left-2 bg-[#0B0B0C]/80 backdrop-blur-md px-2 py-0.5 rounded text-[9px] font-mono text-[#FAF9F6]">
-                  NOC-TL-001
-                </div>
-              </div>
-
-              {/* Monogram Seal Overlay */}
-              <div className="absolute -top-6 -right-6 hidden sm:flex w-20 h-20 rounded-full border border-[#D4AF37]/60 bg-[#FAF9F6]/90 dark:bg-[#0B0B0C]/90 backdrop-blur-md items-center justify-center p-3 shadow-xl z-20 animate-spin-slow">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  <path
-                    id="circlePath"
-                    d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"
-                    fill="none"
-                  />
-                  <text className="text-[9px] font-mono uppercase tracking-[0.25em] fill-[#0B0B0C] dark:fill-[#FAF9F6]">
-                    <textPath xlinkHref="#circlePath">
-                      NOCTURNE ATELIER • MILAN • FLORENCE •
-                    </textPath>
-                  </text>
-                </svg>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-      </div>
     </section>
   );
 }

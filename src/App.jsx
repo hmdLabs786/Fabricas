@@ -3,6 +3,7 @@ import { useStore } from './context/StoreContext';
 
 // Common Components
 import Toast from './components/common/Toast';
+import FloatingWidgets from './components/common/FloatingWidgets';
 
 // Storefront Components
 import PromoBanner from './components/storefront/PromoBanner';
@@ -13,9 +14,10 @@ import ProductGrid from './components/storefront/ProductGrid';
 import QuickViewModal from './components/storefront/QuickViewModal';
 import CartDrawer from './components/storefront/CartDrawer';
 import WishlistDrawer from './components/storefront/WishlistDrawer';
-import CheckoutModal from './components/storefront/CheckoutModal';
+import WhatsAppOrderModal from './components/storefront/WhatsAppOrderModal';
+import TrackOrderModal from './components/storefront/TrackOrderModal';
 import OrderSuccessModal from './components/storefront/OrderSuccessModal';
-import LookbookModal from './components/storefront/LookbookModal';
+import ContactView from './components/storefront/ContactView';
 import Footer from './components/storefront/Footer';
 
 // Admin Components
@@ -27,60 +29,34 @@ import OrderDetailsModal from './components/admin/OrderDetailsModal';
 import ProductsManagement from './components/admin/ProductsManagement';
 import SettingsView from './components/admin/SettingsView';
 
+import { ArrowRight, Sparkles } from 'lucide-react';
+
 export default function App() {
   const {
     currentView,
+    setCurrentView,
     adminSection,
     products,
+    allCategories,
     selectedCategory,
-    setSelectedCategory,
-    searchQuery,
-    setSearchQuery
+    setSelectedCategory
   } = useStore();
 
-  // Storefront Filter States
-  const [selectedSize, setSelectedSize] = useState('All');
-  const [priceRange, setPriceRange] = useState(1500);
+  // Filter States (ONLY Sort & In Stock Only)
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
 
-  // Admin Dashboard view detail helper
+  // Admin order inspection state
   const [inspectedOrder, setInspectedOrder] = useState(null);
 
-  // Filtered Products Pipeline for Storefront
+  // Filtered Products for Shop Page
   const filteredProducts = useMemo(() => {
     return products
       .filter((product) => {
-        // Category filter
         const matchesCategory =
           selectedCategory === 'All' || product.category === selectedCategory;
-
-        // Size filter
-        const matchesSize =
-          selectedSize === 'All' || (product.sizes && product.sizes.includes(selectedSize));
-
-        // Price filter
-        const matchesPrice = product.price <= priceRange;
-
-        // In Stock filter
         const matchesStock = inStockOnly ? product.stock > 0 : true;
-
-        // Search query filter
-        const query = searchQuery.trim().toLowerCase();
-        const matchesSearch =
-          query === '' ||
-          product.name.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query) ||
-          (product.description && product.description.toLowerCase().includes(query)) ||
-          (product.sku && product.sku.toLowerCase().includes(query));
-
-        return (
-          matchesCategory &&
-          matchesSize &&
-          matchesPrice &&
-          matchesStock &&
-          matchesSearch
-        );
+        return matchesCategory && matchesStock;
       })
       .sort((a, b) => {
         if (sortBy === 'featured') {
@@ -97,77 +73,153 @@ export default function App() {
         }
         return 0;
       });
-  }, [products, selectedCategory, selectedSize, priceRange, inStockOnly, searchQuery, sortBy]);
+  }, [products, selectedCategory, inStockOnly, sortBy]);
 
-  const handleResetFilters = () => {
+  // Home Page Products: STRICTLY MAXIMUM 4 PRODUCTS
+  const homeProducts = useMemo(() => {
+    return products.slice(0, 4);
+  }, [products]);
+
+  const handleShowMoreClick = () => {
+    setCurrentView('shop');
     setSelectedCategory('All');
-    setSelectedSize('All');
-    setPriceRange(1500);
-    setInStockOnly(false);
-    setSearchQuery('');
-    setSortBy('featured');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-[#0B0B0C] dark:bg-[#0B0B0C] dark:text-[#FAF9F6] transition-smooth font-sans selection:bg-[#0B0B0C] selection:text-[#FAF9F6] dark:selection:bg-[#D4AF37] dark:selection:text-[#0B0B0C]">
+    <div className="min-h-screen bg-[#FAF8F5] text-[#1E2329] font-sans transition-colors selection:bg-[#0F766E] selection:text-white">
       
       {/* Toast Notification Stack */}
       <Toast />
 
-      {/* VIEW SWITCHER: Storefront vs Admin CMS */}
-      {currentView === 'storefront' ? (
-        <div className="flex flex-col min-h-screen">
-          {/* Top Dynamic Announcement Bar */}
-          <PromoBanner />
+      {/* Floating WhatsApp and Scroll to Top Widgets */}
+      {currentView !== 'admin' && <FloatingWidgets />}
 
-          {/* Sticky Glassmorphic Navbar */}
+      {/* VIEW ROUTING */}
+      {currentView === 'home' && (
+        <div className="flex flex-col min-h-screen">
+          <PromoBanner />
           <Navbar />
 
           <main className="flex-1">
-            {/* Editorial Hero Section */}
+            {/* Text-Only Centered Hero */}
             <Hero />
 
-            {/* Catalog Section */}
-            <section id="catalog-section" className="scroll-mt-20">
-              {/* Interactive Filter & Sort Bar */}
-              <ProductFilter
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                selectedSize={selectedSize}
-                onSizeChange={setSelectedSize}
-                priceRange={priceRange}
-                onPriceRangeChange={setPriceRange}
-                maxPriceLimit={1500}
-                inStockOnly={inStockOnly}
-                onInStockChange={setInStockOnly}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                totalResults={filteredProducts.length}
-                onResetFilters={handleResetFilters}
-              />
+            {/* Home Products Section: Exactly 4 products + "Show More" Button */}
+            <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center max-w-xl mx-auto mb-12 space-y-3">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="h-[1px] w-8 bg-[#C87D55]/40" />
+                  <span className="text-xs font-mono uppercase tracking-[0.25em] font-semibold text-[#0F766E]">
+                    Curated Collection
+                  </span>
+                  <span className="h-[1px] w-8 bg-[#C87D55]/40" />
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1E2329]">
+                  Featured Pieces
+                </h2>
+                <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto">
+                  Handpicked designs tailored for comfort, breathable silhouettes, and everyday contemporary luxury.
+                </p>
+              </div>
 
-              {/* Product Catalog Grid */}
-              <ProductGrid
-                products={filteredProducts}
-                onResetFilters={handleResetFilters}
-              />
+              {/* Grid with 4 products */}
+              <ProductGrid products={homeProducts} />
+
+              {/* "Show More" Button Redirecting to Shop Page */}
+              {products.length > 0 && (
+                <div className="text-center mt-14">
+                  <button
+                    onClick={handleShowMoreClick}
+                    className="shimmer-hover inline-flex items-center gap-3 px-9 py-4 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold uppercase tracking-widest shadow-lg shadow-[#0F766E]/20 transition-all hover:scale-103 active:scale-97 group"
+                  >
+                    <span>Show More Products</span>
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </button>
+                </div>
+              )}
             </section>
           </main>
 
-          {/* Luxury Atelier Footer */}
           <Footer />
-
-          {/* Drawers & Modals */}
-          <QuickViewModal />
-          <CartDrawer />
-          <WishlistDrawer />
-          <CheckoutModal />
-          <OrderSuccessModal />
-          <LookbookModal />
-          <AdminLoginModal />
         </div>
-      ) : (
-        /* Admin CMS Workspace */
+      )}
+
+      {currentView === 'shop' && (
+        <div className="flex flex-col min-h-screen">
+          <PromoBanner />
+          <Navbar />
+
+          <main className="flex-1">
+            {/* Shop Page Header */}
+            <div className="py-10 bg-white border-b border-[#E7E5E0] text-center space-y-2">
+              <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
+                All Garments
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#1E2329]">
+                {selectedCategory === 'All' ? 'Shop All Collections' : selectedCategory}
+              </h1>
+              <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto">
+                Discover everyday elegance, unstitched collections, and ready-to-wear kurtas.
+              </p>
+
+              {/* Category selector pills */}
+              <div className="flex items-center justify-center gap-2 pt-4 flex-wrap max-w-2xl mx-auto px-4">
+                <button
+                  onClick={() => setSelectedCategory('All')}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    selectedCategory === 'All'
+                      ? 'bg-[#0F766E] text-white shadow-xs font-semibold'
+                      : 'bg-[#FAF8F5] text-[#64748B] border border-[#E7E5E0] hover:text-[#1E2329]'
+                  }`}
+                >
+                  All
+                </button>
+                {allCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      selectedCategory === cat
+                        ? 'bg-[#0F766E] text-white shadow-xs font-semibold'
+                        : 'bg-[#FAF8F5] text-[#64748B] border border-[#E7E5E0] hover:text-[#1E2329]'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Product Filter: Strictly Sort and In Stock Only */}
+            <ProductFilter
+              inStockOnly={inStockOnly}
+              onInStockChange={setInStockOnly}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              totalResults={filteredProducts.length}
+            />
+
+            {/* Full Product Grid */}
+            <ProductGrid products={filteredProducts} />
+          </main>
+
+          <Footer />
+        </div>
+      )}
+
+      {currentView === 'contact' && (
+        <div className="flex flex-col min-h-screen">
+          <PromoBanner />
+          <Navbar />
+          <main className="flex-1">
+            <ContactView />
+          </main>
+          <Footer />
+        </div>
+      )}
+
+      {currentView === 'admin' && (
         <AdminLayout>
           {adminSection === 'dashboard' && (
             <DashboardOverview onViewOrderDetails={(ord) => setInspectedOrder(ord)} />
@@ -175,11 +227,11 @@ export default function App() {
 
           {adminSection === 'orders' && <OrdersManagement />}
 
-          {adminSection === 'products' && <ProductsManagement />}
+          {adminSection === 'inventory' && <ProductsManagement />}
 
           {adminSection === 'settings' && <SettingsView />}
 
-          {/* Admin Order Details Modal (when opened from Dashboard overview) */}
+          {/* Order Details modal in Admin */}
           {inspectedOrder && (
             <OrderDetailsModal
               order={inspectedOrder}
@@ -187,10 +239,18 @@ export default function App() {
             />
           )}
 
-          {/* Quick View modal also accessible in admin if clicking garment previews */}
           <QuickViewModal />
         </AdminLayout>
       )}
+
+      {/* Global Modals & Drawers */}
+      <QuickViewModal />
+      <CartDrawer />
+      <WishlistDrawer />
+      <WhatsAppOrderModal />
+      <TrackOrderModal />
+      <OrderSuccessModal />
+      <AdminLoginModal />
 
     </div>
   );

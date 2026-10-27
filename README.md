@@ -1,105 +1,151 @@
-# NOCTURNE ATELIER
-> *"Architecture for the Modern Silhouette."*
+# FABRICAS — Karachi
+> *"Contemporary Pakistani Fashion, Tailored for Everyday Elegance."*
 
-An editorial luxury e-commerce storefront and integrated admin CMS engineering platform built with React, Vite, Tailwind CSS, and reactive `localStorage` persistence.
+A modern, minimalist, responsive E-Commerce Clothing Storefront & Integrated Admin CMS engineered for **FABRICAS** — a Karachi-based fashion label. Built with React 19, Vite, Tailwind CSS v4, Lucide icons, and reactive `localStorage` persistence.
 
 ---
 
 ## 🏛️ Brand Identity & Design System
-* **Brand Name:** **NOCTURNE ATELIER**
-* **Tagline:** *"Architecture for the Modern Silhouette."*
-* **Bespoke Scalable Vector SVG Logo:** An interlocking minimalist geometric monogram of **"N"** and **"A"** enclosed within a sharp architectural diamond frame with cardinal geometry points and stroke hover animations. Displayed in:
-  * Main sticky navigation bar
-  * Luxury editorial footer
-  * 256-bit encrypted checkout header
-  * Admin CMS sidebar
-* **Palette:**
-  * **Light Mode:** Warm Alabaster (`#FAF9F6`), Deep Obsidian (`#0B0B0C`), Muted Stone borders (`#E4E4E0`), and Electric Champagne (`#D4AF37`)
-  * **Dark Mode:** Deep Obsidian (`#0B0B0C`), Warm Alabaster (`#FAF9F6`), Dark Stone (`#202025`), Gold Accents (`#E5C378`)
-  * **Smoothness:** Custom cubic-bezier transition curves (`all 0.35s cubic-bezier(0.16, 1, 0.3, 1)`)
+* **Brand Name:** **FABRICAS**
+* **Heritage & Origin:** Karachi, Pakistan
+* **Bespoke Scalable Vector SVG Logo:** An interlocking geometric woven "F" emblem rendered in Persian teal (`#0F766E`) and warm terracotta (`#C87D55`) stitch accents.
+* **Typography:** Elegant modern sans-serif stack combining `Plus Jakarta Sans` for clean body readability and `Outfit` for refined display headings.
+* **Color Palette:**
+  * Background: Warm Linen / Off-White (`#FAF8F5`)
+  * Surface: Crisp White (`#FFFFFF`) with subtle warm stone borders (`#E7E5E0`)
+  * Accents: Deep Persian Teal (`#0F766E`) and Warm Terracotta (`#C87D55`)
+  * Currency: All pricing rendered natively in **Pakistani Rupee (`Rs. ` / PKR)**
 
 ---
 
 ## 🛍️ Customer E-Commerce Storefront
-1. **Dynamic Top Announcement Bar:**
-   * Text controlled live from Admin Settings (e.g. *"COMPLIMENTARY EXPRESS SHIPPING ON ORDERS OVER $250 — CODE: NOCTURNE15"*).
-   * One-click coupon code copy & application (`NOCTURNE15` for 15% off).
-   * Live enable/disable toggle from Admin Settings.
-2. **Sticky Glassmorphic Navbar:**
-   * Bespoke SVG logo + luxury wordmark.
-   * Category links: `All`, `Outerwear`, `Knitwear`, `Tailoring`, `Streetwear`, `Accessories`.
-   * Expanding interactive search bar with ESC key clear.
-   * Dark/Light mode toggle.
-   * Saved Pieces (Wishlist) drawer trigger with live count badge.
-   * Shopping Bag drawer trigger with item count and subtle pulse animation.
-   * Admin Portal trigger button with lock indicator.
-3. **Editorial Hero Section:**
-   * Full-bleed split layout featuring high-fashion photography.
-   * Bold kinetic typography with seasonal badge (*"AUTUMN / WINTER ARCHIVE • VOL. 04"*).
-   * Dual CTAs: *"Explore Collection"* (smooth scroll) and *"View Lookbook"* (opens interactive editorial showcase).
-4. **Interactive Product Catalog & Filtering:**
-   * Pre-populated with **12 realistic high-fashion garments** across Outerwear, Knitwear, Tailoring, Streetwear, and Accessories.
-   * Filter by Category pills, Size checkboxes (`XS`, `S`, `M`, `L`, `XL`), Price Range slider, and "In Stock Only" toggle.
-   * Sort by `Featured Archive`, `Newest First`, `Price: Low to High`, and `Price: High to Low`.
-5. **Product Cards & Micro-Interactions:**
-   * Secondary image / zoom hover effects.
-   * Quick-add size selector overlay.
-   * Stock status badges (*"Low Stock"* if < 5, *"Sold Out"* if 0, *"Archival Sale"* if discounted).
-   * Wishlist heart toggle button.
-   * Quick View modal trigger.
-6. **Quick-View & Detail Modal:**
-   * High-resolution gallery preview with thumbnail toggling.
-   * Interactive size and color swatch selectors.
-   * Quantity stepper and stock allocation indicators.
-   * Fabric provenance and garment care instructions.
-7. **Slide-Over Shopping Cart & Slide-Over Wishlist:**
-   * Live calculated free shipping progress bar.
-   * Quantity steppers and item deletion.
-   * Promo code engine (`NOCTURNE15` for 15% discount).
-   * Dynamic calculations for Subtotal, Discount, Shipping, and Tax.
-8. **Checkout Flow & Confetti Celebration:**
-   * Recipient contact details, shipping address, and payment method selection (Credit Card, Apple Pay, White Glove Concierge).
-   * Generates unique order ID (`#NOC-XXXX`), reduces catalog stock in real time, triggers confetti celebration, displays confirmation screen, and syncs immediately to the Admin Orders list.
+
+1. **Top Announcement Bar:**
+   * Dynamic banner with customizable text from Admin Settings (e.g., *"Free shipping across Karachi on orders over Rs. 3,500 — WhatsApp: +92 3222567147"*).
+   * One-click coupon code copy (`FABRICAS10` for 10% off).
+   * Live toggle in Admin Settings.
+
+2. **Clean Editorial Navigation:**
+   * Bespoke woven "F" SVG logo and **FABRICAS • KARACHI** wordmark.
+   * Navigation items:
+     * **Home**: Landing page featuring curated 4-product collection and "Show More Products" button.
+     * **Shop**: Dynamic dropdown sub-menu derived automatically from active inventory categories (Eastern Wear, Unstitched, Kurtas, Shawls, Western, etc.).
+     * **Contact**: Direct Karachi showroom details and immediate WhatsApp/Email contact actions.
+   * Quick action icons:
+     * **Track Order**: Instant modal lookup by Order ID (`#FAB-XXXX`) or customer phone number.
+     * **Favorites**: Wishlist drawer with live badge counter.
+     * **Cart**: Slide-over bag with real-time subtotal and WhatsApp checkout.
+
+3. **Text-Only Centered Hero Section (No Imagery):**
+   * Minimalist, typography-centric hero honoring Karachi's textile heritage.
+   * Prominent badge: *"Karachi Based Clothing Store"*.
+   * Heading: *"Explore Clothing — Handcrafted Silhouettes & Contemporary Fabrics"*.
+   * Direct CTA buttons to browse the shop or explore categories.
+
+4. **Product Catalog & Filtering (Home vs. Shop):**
+   * **Home Page:** Displays strictly **4 featured products** maximum with a large "Show More Products" button routing to the full Shop.
+   * **Shop Page:** Streamlined filter bar containing **strictly**:
+     * **"In Stock Only"** checkbox.
+     * **"Sort By"** dropdown (`Featured`, `Newest`, `Price: Low to High`, `Price: High to Low`).
+     * Clean empty state with quick admin shortcut when no products exist yet.
+
+5. **Adaptive Product Display:**
+   * Garments with **no sizes or colors** (e.g. unstitched fabric, dupattas, shawls) display a clean 1-click **"Add to Bag"** button.
+   * Garments with **configured sizes/colors** display quick-select overlays and swatch previews.
+   * Stock status badges (*"Low Stock"* when `< 5`, *"Sold Out"* when `0`).
+
+6. **Quick View & Details Modal:**
+   * Full product overview with dynamic attributes (sizes, colors, fabric composition, care guide, and custom notes).
+
+7. **Direct WhatsApp Checkout Flow:**
+   * Replaced traditional multi-step checkout with a seamless **"Continue to WhatsApp"** pipeline.
+   * Customers enter Name, Phone Number, Karachi/Pakistan Delivery Address, and optional notes.
+   * System generates a unique tracking order reference (e.g. `#FAB-7821`) and formats an instant WhatsApp message:
+     ```text
+     Assalam o Alaikum Fabricas Team! 🌸
+
+     I would like to place an order:
+     Order ID: #FAB-7821
+
+     Customer Details:
+     • Name: [Customer Name]
+     • Phone: [03XXXXXXXXX]
+     • Delivery Address: [Street, Area, City]
+
+     Items Ordered:
+     1. [Product Name] (Size: M, Color: Olive) x 1 = Rs. 4,500
+     --------------------------
+     Subtotal: Rs. 4,500
+     Estimated Delivery: FREE (Orders over Rs. 3,500)
+     Total Payable: Rs. 4,500 (Cash on Delivery)
+     ```
+   * Automatically opens `https://wa.me/923222567147` with the pre-filled message.
+   * Pushes order into `localStorage` so the customer can track it instantly and the store manager sees it in the Admin Dashboard.
+
+8. **Contact View (Clean Info, No Form):**
+   * Strictly displays Karachi studio address, WhatsApp (`+92 3222567147`), Email (`fabricas@gmail.com`), and business hours.
+   * Direct "Chat on WhatsApp" and "Email Fabricas" buttons.
+
+9. **Floating Widgets:**
+   * Floating WhatsApp quick chat button linking directly to `+92 3222567147`.
+   * Smooth Scroll-to-Top button that appears after scrolling down.
 
 ---
 
-## 🔐 Admin Authentication Gate
-* **Route / Modal:** Click the **"Admin Portal"** button in navigation or footer.
-* **Credentials:**
+## 🔒 Secret Admin Portal
+
+* **Hidden Access:** No visible admin link or button in the header or main navigation.
+* **Access Method:** Click the **FABRICAS logo in the website footer** to trigger the authentication modal.
+* **Authentication:**
   * **Username:** `admin`
   * **Password:** `admin2008`
-* Interactive error shake animation on invalid inputs.
-* Seamless transition to the Admin Workspace with a **"View Live Storefront"** button to toggle between customer and admin views.
+  * Credentials are **NOT** shown on screen.
+  * Features interactive shake animation on invalid input.
 
 ---
 
-## 📊 Admin Dashboard & CMS Modules
+## ⚙️ Admin CMS & Operations
+
+The Admin Workspace features a focused 4-module navigation:
+
 1. **Dashboard Overview:**
-   * Dynamic KPI Cards: Total Revenue (+18.4% badge), Total Orders (pending count), Average Order Value (AOV), and Active Inventory / Low Stock Count.
-   * Sales & Revenue Analytics: SVG / CSS area chart toggleable between 7-day and 30-day horizons.
-   * Category Distribution progress widget.
-   * Recent Orders table with one-click detail inspection.
-   * Actionable Panels: Low Stock Alerts with one-click **"+10 Restock"**, Top Archival Sellers leaderboard, and Live Store Activity Feed.
+   * Real-time KPI cards: Total Revenue (PKR), Total WhatsApp Orders, Average Order Value (AOV), and Active Inventory Count.
+   * Latest Orders table with status badges and quick modal lookup.
+   * Low stock alerts widget with 1-click **"Restock +10"** button.
+   * Recent activity audit log.
+
 2. **Orders Management:**
-   * Pre-populated with 8 realistic historical orders + newly placed customer orders.
-   * Filter tabs with live count badges (`All`, `Pending`, `Processing`, `Shipped`, `Delivered`, `Cancelled`).
-   * Search by Order ID, Client Name, or Email; sort by date or order value.
-   * In-row live status dropdown allowing instant lifecycle updates with immediate KPI recalculation.
-   * Full Order Details modal with itemized garment breakdown and delete option.
-3. **Products Management (Full CRUD):**
-   * Inventory table with thumbnails, SKU, category, price, color-coded stock levels, sizes, and featured star toggle.
-   * **Add New Product Modal:** Name, SKU, Category, Price, Compare Price, Stock, Sizes, Color Swatches, Image URL with quick preset buttons, and live storefront card preview.
-   * **Edit Product Modal:** Pre-populated with existing details, immediately updating both Admin and Storefront.
-   * **Delete Product:** Permanent deletion with prompt confirmation.
-4. **Store Settings:**
-   * Brand & Storefront settings (Name, Tagline, Support Email, Promo Banner Text + toggle).
-   * Commerce, Tax & Shipping rules (Currency Symbol, Tax %, Flat Shipping Fee, Free Shipping Threshold).
-   * **Reset Demo Store Data:** Restores original 12 garments, 8 orders, and settings in one click.
-   * **Export Store Data (JSON):** Downloads clean JSON backup of all store entities.
+   * Filter tabs by order status: `All`, `Pending`, `Processing`, `Shipped`, `Delivered`, `Cancelled`.
+   * Search by Order ID, Customer Name, or Phone.
+   * In-table live status selector with instant state synchronization.
+   * Order Details modal with itemized garment list and 1-click WhatsApp customer contact button.
+
+3. **Inventory Management (Flexible Product Attributes):**
+   * **Full CRUD:** Create, Read, Update, and Delete products.
+   * **Dynamic Attribute Configuration:** Not all garments have sizes or colors (e.g. unstitched fabric, stoles). The modal provides toggles:
+     * Toggle **Sizes** (`XS`, `S`, `M`, `L`, `XL`, `Custom`) ON or OFF.
+     * Toggle **Colors** ON or OFF with customizable color hex & label inputs.
+     * Toggle **Fabric & Material** details ON or OFF.
+     * Toggle **Custom Notes / Fit Advice** ON or OFF.
+   * Category assigner with instant addition of new categories.
+   * SKU generator and featured item toggle.
+
+4. **Settings:**
+   * Store Name, Tagline, Email (`fabricas@gmail.com`), and WhatsApp Number (`+92 3222567147`).
+   * Top Promo Announcement toggle and message editor.
+   * Category Management (add/remove categories that power the Shop dropdown sub-menu).
+   * Delivery settings (Currency `Rs. `, Flat Delivery Fee, Free Delivery Threshold).
+   * JSON Export/Backup for all store data.
 
 ---
 
-## 🚀 Running the Project
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm or pnpm
+
+### Installation & Run
 ```bash
 # Install dependencies
 npm install
@@ -107,9 +153,52 @@ npm install
 # Start Vite development server
 npm run dev
 
-# Build production bundle
+# Build for production
 npm run build
 
-# Preview production build
+# Preview production build locally
 npm run preview
 ```
+
+---
+
+## 📁 Key Files Structure
+
+```
+├── index.html                   # HTML entry with Plus Jakarta Sans & Outfit fonts
+├── src/
+│   ├── App.jsx                  # Main application orchestrator (Home, Shop, Contact, Admin)
+│   ├── index.css                # Tailwind CSS v4 setup and custom animations
+│   ├── context/
+│   │   └── StoreContext.jsx     # Reactive store state, localStorage persistence & WhatsApp order engine
+│   ├── data/
+│   │   └── defaultData.js       # Store configuration, Karachi defaults, blank product/order catalog
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Logo.jsx         # Custom SVG geometric woven 'F' logo
+│   │   │   └── FloatingWidgets.jsx # WhatsApp float button & scroll to top
+│   │   ├── storefront/
+│   │   │   ├── Navbar.jsx       # Header with dynamic Shop sub-menu, track order, wishlist & cart
+│   │   │   ├── Hero.jsx         # Text-only centered Karachi hero section
+│   │   │   ├── ProductGrid.jsx  # Responsive 4-col product grid with empty state
+│   │   │   ├── ProductCard.jsx  # Garment card with adaptive size/color handling
+│   │   │   ├── ProductFilter.jsx # Strictly Sort & In Stock Only
+│   │   │   ├── QuickViewModal.jsx # Product detail view
+│   │   │   ├── CartDrawer.jsx   # Slide-over cart with WhatsApp CTA
+│   │   │   ├── WhatsAppOrderModal.jsx # Order form that generates WhatsApp message
+│   │   │   ├── TrackOrderModal.jsx # Order status tracker by ID or phone
+│   │   │   ├── ContactView.jsx  # Karachi contact info (no form)
+│   │   │   └── Footer.jsx       # Footer with secret logo click trigger for Admin Login
+│   │   └── admin/
+│   │       ├── AdminLoginModal.jsx # Clean login modal (credentials hidden)
+│   │       ├── AdminLayout.jsx  # Admin layout with Dashboard, Orders, Inventory, Settings
+│   │       ├── DashboardOverview.jsx # Analytics, KPIs, latest orders & low stock alert
+│   │       ├── OrdersManagement.jsx # Order management with status updates
+│   │       ├── ProductsManagement.jsx # Inventory CRUD with dynamic attributes
+│   │       ├── ProductFormModal.jsx # Flexible garment attribute configurator
+│   │       └── SettingsView.jsx # Live store & category configuration
+```
+
+---
+
+*Designed and engineered for **FABRICAS** — Architecture for Contemporary Pakistani Fashion.*

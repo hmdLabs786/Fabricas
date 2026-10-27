@@ -3,57 +3,60 @@
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-editorial: 'Syne', 'Cinzel', serif;
-    --font-serif: 'Italiana', 'Cinzel', serif;
-    --cubic-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    --color-primary: #0F766E;
+    --color-primary-dark: #0D5C58;
+    --color-accent: #C87D55;
+    --color-gold: #C5A059;
+    --color-bg: #FAF8F5;
+    --color-text: #1E2329;
+    --color-border: #E7E5E0;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
     font-family: var(--font-sans);
-    transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    overflow-x: hidden;
   }
 
-  h1, h2, h3, .font-editorial {
-    font-family: var(--font-editorial);
-  }
-
-  .font-serif-luxury {
-    font-family: var(--font-serif);
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
   }
 }
 
-/* Custom transitions and animations */
-.transition-smooth {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.cubic-bezier-all {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Glassmorphism */
+/* Luxury Editorial Glassmorphism */
 .glass-header {
-  background: rgba(250, 249, 246, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-.dark .glass-header {
-  background: rgba(11, 11, 12, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(250, 248, 245, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(231, 229, 224, 0.8);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(231, 229, 224, 0.9);
 }
 
-.dark .glass-card {
-  background: rgba(20, 20, 24, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.luxury-card-hover {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+}
+
+.luxury-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 35px -10px rgba(15, 118, 110, 0.08), 0 10px 20px -5px rgba(200, 125, 85, 0.05);
+  border-color: rgba(15, 118, 110, 0.3);
+}
+
+/* Fine Gold & Teal Accent Line */
+.luxury-divider {
+  background: linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.35), rgba(200, 125, 85, 0.45), rgba(15, 118, 110, 0.35), transparent);
 }
 
 /* Custom Scrollbar */
@@ -62,20 +65,19 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #FAF8F5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D1D1CB;
+  background: #D5D3CD;
   border-radius: 9999px;
 }
-.dark ::-webkit-scrollbar-thumb {
-  background: #333338;
-}
 ::-webkit-scrollbar-thumb:hover {
-  background: #A0A09B;
+  background: #0F766E;
 }
 
-/* Shake animation for invalid admin password */
+/* Animations */
+
+/* 1. Shake animation for invalid admin password */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-8px); }
@@ -86,28 +88,145 @@
   animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-/* Marquee for promo announcement bar */
-@keyframes marquee {
+/* 2. Floating animation for WhatsApp badge */
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float-subtle 3.2s ease-in-out infinite;
+}
+
+/* 3. WhatsApp Radar Ripple Animation */
+@keyframes radar-ripple {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  65% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
+
+.animate-radar {
+  animation: radar-ripple 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* 4. Infinite Smooth Editorial Marquee */
+@keyframes marquee-scroll {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
   display: flex;
-  width: 200%;
-  animation: marquee 24s linear infinite;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
 }
 
 .animate-marquee:hover {
   animation-play-state: paused;
 }
 
-/* Soft pulse */
-@keyframes subtle-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.02); }
+/* 5. Ambient glowing orbs */
+@keyframes ambient-glow-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(30px, -20px) scale(1.15);
+    opacity: 0.55;
+  }
 }
 
-.animate-subtle-pulse {
-  animation: subtle-pulse 3s infinite ease-in-out;
+@keyframes ambient-glow-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-35px, 25px) scale(1.2);
+    opacity: 0.5;
+  }
+}
+
+.animate-ambient-1 {
+  animation: ambient-glow-1 14s ease-in-out infinite alternate;
+}
+
+.animate-ambient-2 {
+  animation: ambient-glow-2 18s ease-in-out infinite alternate;
+}
+
+/* 6. Luxury Button Shimmer Sweep */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.shimmer-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-20deg);
+  transition: none;
+}
+
+.shimmer-hover:hover::after {
+  animation: shimmer-sweep 1s ease-in-out;
+}
+
+/* 7. Fade-In Up entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 8. Delicate reveal pulse for badges */
+@keyframes soft-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(15, 118, 110, 0);
+  }
+}
+
+.animate-badge-pulse {
+  animation: soft-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

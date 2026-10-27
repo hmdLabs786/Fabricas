@@ -1,121 +1,81 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
-import { CheckCircle2, PackageCheck, ArrowRight, ExternalLink, Printer } from 'lucide-react';
+import { CheckCircle2, ArrowRight, ExternalLink } from 'lucide-react';
+import WhatsAppIcon from '../common/WhatsAppIcon';
 
 export default function OrderSuccessModal() {
   const {
-    isOrderSuccessOpen,
-    setIsOrderSuccessOpen,
     lastPlacedOrder: order,
+    setLastPlacedOrder,
     formatPrice,
-    setCurrentView,
-    setAdminSection,
-    isAdminLoggedIn,
-    setIsAdminLoginOpen
+    setIsTrackOrderOpen
   } = useStore();
 
-  if (!isOrderSuccessOpen || !order) return null;
+  if (!order) return null;
 
-  const handleGoToAdmin = () => {
-    setIsOrderSuccessOpen(false);
-    if (isAdminLoggedIn) {
-      setCurrentView('admin');
-      setAdminSection('orders');
-    } else {
-      setIsAdminLoginOpen(true);
+  const handleOpenWhatsApp = () => {
+    if (order.whatsappUrl) {
+      window.open(order.whatsappUrl, '_blank');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="relative w-full max-w-2xl bg-[#FAF9F6] dark:bg-[#121214] text-[#0B0B0C] dark:text-[#FAF9F6] rounded-2xl shadow-2xl border border-[#E4E4E0] dark:border-[#27272A] p-6 sm:p-10 my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#E7E5E0] p-6 sm:p-8 my-8 text-center space-y-6">
         
-        {/* Top Success Badge */}
-        <div className="flex flex-col items-center text-center space-y-3">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/30">
-            <PackageCheck className="w-8 h-8" />
-          </div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-[#D4AF37] font-semibold">
-            Order Confirmation
+        {/* Success Icon */}
+        <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
+          <CheckCircle2 className="w-8 h-8" />
+        </div>
+
+        <div>
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#0F766E] font-semibold">
+            Order Reference Generated
           </span>
-          <h2 className="text-2xl sm:text-3xl font-editorial font-bold uppercase tracking-tight">
-            Order #{order.id} Confirmed
+          <h2 className="text-2xl font-display font-bold text-[#1E2329] mt-1">
+            Order #{order.id}
           </h2>
-          <p className="text-xs sm:text-sm text-[#52525B] dark:text-[#A1A1AA] max-w-md">
-            Thank you, {order.customer.name}. Your architectural pieces have been allocated and our Florence atelier has commenced bespoke preparation.
+          <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
+            Thank you, {order.customer.name}! Your order has been initiated and prepared for WhatsApp transmission.
           </p>
         </div>
 
-        {/* Order Details Receipt Box */}
-        <div className="mt-8 p-5 rounded-xl bg-white/70 dark:bg-[#18181B]/70 border border-[#E4E4E0] dark:border-[#27272A] space-y-4 text-xs">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 border-b border-[#E4E4E0] dark:border-[#27272A] pb-3">
-            <div>
-              <span className="text-[10px] uppercase font-mono text-[#71717A] block">Order ID</span>
-              <strong className="font-mono text-[#D4AF37]">#{order.id}</strong>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-mono text-[#71717A] block">Status</span>
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                {order.status}
-              </span>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-mono text-[#71717A] block">Payment</span>
-              <span className="truncate block font-medium">{order.paymentMethod}</span>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-mono text-[#71717A] block">Total Amount</span>
-              <strong className="font-mono text-sm">{formatPrice(order.total)}</strong>
-            </div>
+        {/* Receipt Box */}
+        <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E7E5E0] text-left text-xs space-y-3">
+          <div className="flex justify-between border-b border-[#E7E5E0] pb-2">
+            <span className="text-[#64748B]">Customer:</span>
+            <strong className="text-[#1E2329]">{order.customer.name} ({order.customer.phone})</strong>
           </div>
-
-          {/* Delivery Destination */}
-          <div className="text-[11px] text-[#52525B] dark:text-[#A1A1AA]">
-            <span className="font-semibold text-[#0B0B0C] dark:text-white block mb-0.5">
-              Shipping Destination:
+          <div className="flex justify-between border-b border-[#E7E5E0] pb-2">
+            <span className="text-[#64748B]">Address:</span>
+            <span className="text-[#1E2329] text-right truncate max-w-[220px]">
+              {order.customer.address}, {order.customer.city}
             </span>
-            <p>
-              {order.customer.address}, {order.customer.city}, {order.customer.country}
-            </p>
-            <p className="text-[10px] text-[#71717A]">
-              Confirmation dispatch sent to: {order.customer.email}
-            </p>
           </div>
-
-          {/* Items Summary */}
-          <div className="border-t border-[#E4E4E0] dark:border-[#27272A] pt-3 space-y-2">
-            <span className="text-[10px] uppercase font-mono tracking-wider text-[#71717A] block">
-              Itemized Allocation:
-            </span>
-            {order.items.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold">{item.quantity}x</span>
-                  <span>{item.name}</span>
-                  <span className="text-[11px] text-[#71717A]">({item.size} / {item.color})</span>
-                </div>
-                <span className="font-mono font-semibold">{formatPrice(item.price * item.quantity)}</span>
-              </div>
-            ))}
+          <div className="flex justify-between font-bold text-sm pt-1">
+            <span>Total Payable (COD):</span>
+            <span className="text-[#0F766E] font-mono">{formatPrice(order.total)}</span>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+        {/* WhatsApp Button */}
+        <div className="space-y-2 pt-2">
           <button
-            onClick={() => setIsOrderSuccessOpen(false)}
-            className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] text-xs font-semibold uppercase tracking-[0.2em] hover:bg-[#D4AF37] transition-all flex items-center justify-center gap-2"
+            onClick={handleOpenWhatsApp}
+            className="w-full shimmer-hover py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20BA5C] text-white font-semibold text-xs tracking-wider shadow-lg shadow-[#25D366]/25 transition-all flex items-center justify-center gap-2.5 active:scale-98 group"
           >
-            <span>Continue Exploring</span>
-            <ArrowRight className="w-4 h-4" />
+            <WhatsAppIcon className="w-5 h-5 text-white transition-transform group-hover:scale-110" />
+            <span>Open WhatsApp Chat Now</span>
+            <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
 
           <button
-            onClick={handleGoToAdmin}
-            className="w-full sm:flex-1 py-3.5 px-6 rounded-xl border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 text-xs font-semibold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
+            onClick={() => {
+              setLastPlacedOrder(null);
+            }}
+            className="w-full py-2.5 px-4 rounded-2xl text-xs font-semibold text-[#64748B] hover:text-[#1E2329] transition-colors"
           >
-            <ExternalLink className="w-4 h-4" />
-            <span>View Order in Admin CMS</span>
+            Done / Continue Shopping
           </button>
         </div>
 

@@ -4,14 +4,11 @@ import ProductFormModal from './ProductFormModal';
 import {
   Plus,
   Search,
-  Filter,
   Edit,
   Trash2,
   Star,
   Package,
-  AlertTriangle,
-  RefreshCw,
-  ExternalLink
+  ShoppingBag
 } from 'lucide-react';
 
 export default function ProductsManagement() {
@@ -21,24 +18,23 @@ export default function ProductsManagement() {
     restockProduct,
     toggleFeatured,
     formatPrice,
+    allCategories,
     openQuickView
   } = useStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
-  const [stockFilter, setStockFilter] = useState('all'); // 'all', 'low', 'out'
+  const [stockFilter, setStockFilter] = useState('all');
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-
-  const categories = ['All', 'Outerwear', 'Knitwear', 'Tailoring', 'Streetwear', 'Accessories'];
 
   const filteredProducts = products.filter((p) => {
     const matchesCat = categoryFilter === 'All' || p.category === categoryFilter;
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       p.name.toLowerCase().includes(term) ||
-      p.sku.toLowerCase().includes(term) ||
-      p.category.toLowerCase().includes(term);
+      (p.sku && p.sku.toLowerCase().includes(term)) ||
+      (p.category && p.category.toLowerCase().includes(term));
 
     let matchesStock = true;
     if (stockFilter === 'low') matchesStock = p.stock > 0 && p.stock < 5;
@@ -69,17 +65,17 @@ export default function ProductsManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#D4AF37]">
-            Atelier Inventory & Catalog
+          <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
+            Store Catalog
           </span>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-bold uppercase tracking-tight text-[#0B0B0C] dark:text-[#FAF9F6] mt-1">
-            Products Management
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#1E2329] mt-0.5">
+            Inventory Management
           </h1>
         </div>
 
         <button
           onClick={handleAddNew}
-          className="px-5 py-2.5 rounded-xl bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] text-xs font-semibold uppercase tracking-wider hover:bg-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-[#0B0B0C] transition-all flex items-center gap-2 shadow-md"
+          className="px-5 py-2.5 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold tracking-wide transition-all flex items-center gap-2 shadow-sm"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
@@ -90,28 +86,29 @@ export default function ProductsManagement() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
         {/* Search */}
         <div className="md:col-span-6 relative">
-          <Search className="w-4 h-4 text-[#71717A] absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-[#94A3B8] absolute left-3.5 top-3" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search garments by title, SKU, or style..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] focus:outline-none focus:border-[#0B0B0C] dark:focus:border-[#D4AF37]"
+            placeholder="Search items by title, SKU, or category..."
+            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
           />
         </div>
 
         {/* Category Filter */}
         <div className="md:col-span-3">
-          <label htmlFor="products-category" className="sr-only">Filter by category</label>
+          <label htmlFor="inventory-category" className="sr-only">Filter by category</label>
           <select
-            id="products-category"
+            id="inventory-category"
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="w-full px-3 py-2.5 text-xs rounded-xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] focus:outline-none cursor-pointer"
+            className="w-full px-3 py-2.5 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none cursor-pointer"
           >
-            {categories.map((c) => (
+            <option value="All">All Categories</option>
+            {allCategories.map((c) => (
               <option key={c} value={c}>
-                Category: {c}
+                {c}
               </option>
             ))}
           </select>
@@ -119,41 +116,49 @@ export default function ProductsManagement() {
 
         {/* Stock Filter */}
         <div className="md:col-span-3">
-          <label htmlFor="products-stock" className="sr-only">Filter by stock level</label>
+          <label htmlFor="inventory-stock" className="sr-only">Filter by stock</label>
           <select
-            id="products-stock"
+            id="inventory-stock"
             value={stockFilter}
             onChange={(e) => setStockFilter(e.target.value)}
-            className="w-full px-3 py-2.5 text-xs rounded-xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] focus:outline-none cursor-pointer"
+            className="w-full px-3 py-2.5 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none cursor-pointer"
           >
-            <option value="all">Stock: All Inventory</option>
-            <option value="low">Stock: Low Stock (&lt; 5)</option>
-            <option value="out">Stock: Sold Out (0)</option>
+            <option value="all">All Stock Status</option>
+            <option value="low">Low Stock (&lt; 5)</option>
+            <option value="out">Sold Out (0)</option>
           </select>
         </div>
       </div>
 
       {/* Inventory Table */}
-      <div className="rounded-2xl border border-[#E4E4E0] dark:border-[#202025] bg-white dark:bg-[#121214] overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-[#E7E5E0] bg-white overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF9F6] dark:bg-[#18181B] border-b border-[#E4E4E0] dark:border-[#202025] text-[#71717A] dark:text-[#A1A1AA] uppercase font-mono">
+            <thead className="bg-[#FAF8F5] border-b border-[#E7E5E0] text-[#64748B] uppercase font-mono">
               <tr>
-                <th className="py-3.5 px-4">Garment</th>
+                <th className="py-3.5 px-4">Product</th>
                 <th className="py-3.5 px-4">SKU</th>
                 <th className="py-3.5 px-4">Category</th>
                 <th className="py-3.5 px-4">Price</th>
-                <th className="py-3.5 px-4">Stock Level</th>
-                <th className="py-3.5 px-4">Sizes</th>
+                <th className="py-3.5 px-4">Attributes</th>
+                <th className="py-3.5 px-4">Stock</th>
                 <th className="py-3.5 px-4 text-center">Featured</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E4E0]/60 dark:divide-[#202025]/60">
+            <tbody className="divide-y divide-[#E7E5E0]">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="py-12 text-center text-[#71717A]">
-                    No garments found matching criteria.
+                  <td colSpan="8" className="py-16 text-center text-[#64748B]">
+                    <Package className="w-10 h-10 text-[#94A3B8] mx-auto mb-2 opacity-50" />
+                    <p className="font-semibold text-sm text-[#1E2329]">No products found</p>
+                    <p className="text-xs text-[#64748B] mt-0.5 mb-4">Click "Add New Product" to populate your catalog.</p>
+                    <button
+                      onClick={handleAddNew}
+                      className="px-4 py-2 rounded-full bg-[#0F766E] text-white text-xs font-semibold"
+                    >
+                      + Add Product Now
+                    </button>
                   </td>
                 </tr>
               ) : (
@@ -162,87 +167,108 @@ export default function ProductsManagement() {
                   const isLow = p.stock > 0 && p.stock < 5;
 
                   return (
-                    <tr
-                      key={p.id}
-                      className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
-                    >
-                      {/* Garment Image & Name */}
+                    <tr key={p.id} className="hover:bg-[#FAF8F5] transition-colors">
+                      {/* Product Thumbnail & Name */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <img
-                            src={p.image}
-                            alt={p.name}
-                            className="w-11 h-14 object-cover rounded-lg bg-[#ECECE8] flex-shrink-0 cursor-pointer"
-                            onClick={() => openQuickView(p)}
-                          />
+                          {p.image ? (
+                            <img
+                              src={p.image}
+                              alt={p.name}
+                              className="w-11 h-14 object-cover rounded-xl bg-[#F8F7F4] flex-shrink-0 cursor-pointer"
+                              onClick={() => openQuickView(p)}
+                            />
+                          ) : (
+                            <div className="w-11 h-14 rounded-xl bg-[#F8F7F4] flex items-center justify-center text-[#94A3B8] flex-shrink-0">
+                              <ShoppingBag className="w-5 h-5 opacity-40" />
+                            </div>
+                          )}
                           <div>
                             <p
                               onClick={() => openQuickView(p)}
-                              className="font-semibold text-[#0B0B0C] dark:text-[#FAF9F6] hover:text-[#D4AF37] transition-colors cursor-pointer"
+                              className="font-semibold text-[#1E2329] hover:text-[#0F766E] transition-colors cursor-pointer"
                             >
                               {p.name}
                             </p>
-                            <p className="text-[10px] text-[#71717A] font-mono mt-0.5">
-                              {p.colors?.map((c) => c.name).join(' / ')}
-                            </p>
+                            <span className="text-[10px] text-[#64748B] font-mono">
+                              ID: {p.id.slice(-6)}
+                            </span>
                           </div>
                         </div>
                       </td>
 
                       {/* SKU */}
-                      <td className="py-3.5 px-4 font-mono text-[11px] text-[#71717A]">
-                        {p.sku}
+                      <td className="py-3.5 px-4 font-mono text-[11px] text-[#64748B]">
+                        {p.sku || '—'}
                       </td>
 
                       {/* Category */}
                       <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-black/5 dark:bg-white/5">
-                          {p.category}
+                        <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-medium bg-[#0F766E]/10 text-[#0F766E]">
+                          {p.category || 'Clothing'}
                         </span>
                       </td>
 
                       {/* Price */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="font-mono font-bold">{formatPrice(p.price)}</span>
+                          <span className="font-mono font-bold text-[#1E2329]">{formatPrice(p.price)}</span>
                           {p.comparePrice && (
-                            <span className="text-[10px] font-mono text-[#71717A] line-through">
+                            <span className="text-[10px] font-mono text-[#94A3B8] line-through">
                               {formatPrice(p.comparePrice)}
                             </span>
                           )}
                         </div>
                       </td>
 
-                      {/* Stock Level with Color-Coding */}
+                      {/* Attributes summary */}
+                      <td className="py-3.5 px-4 text-[11px] text-[#64748B] space-y-0.5">
+                        <div className="flex flex-wrap gap-1">
+                          {p.hasSizes ? (
+                            <span className="px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-mono">
+                              Sizes: {p.sizes?.join(', ')}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[#94A3B8] italic">No Sizes</span>
+                          )}
+                          {p.hasColors && (
+                            <span className="px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-mono">
+                              {p.colors?.length} Colors
+                            </span>
+                          )}
+                          {p.hasFabric && p.fabric && (
+                            <span className="px-1.5 py-0.5 rounded bg-gray-100 text-[10px] truncate max-w-[120px]">
+                              {p.fabric}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Stock Level */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
                               isSoldOut
-                                ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300'
+                                ? 'bg-rose-100 text-rose-800'
                                 : isLow
-                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 animate-pulse'
-                                : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                                ? 'bg-amber-100 text-amber-800 animate-pulse'
+                                : 'bg-emerald-100 text-emerald-800'
                             }`}
                           >
-                            {isSoldOut ? 'Sold Out (0)' : `${p.stock} units`}
+                            {isSoldOut ? 'Sold Out' : `${p.stock} units`}
                           </span>
 
                           {p.stock < 10 && (
                             <button
                               onClick={() => restockProduct(p.id, 10)}
-                              className="px-1.5 py-0.5 rounded border border-[#E4E4E0] dark:border-[#27272A] hover:bg-[#D4AF37] hover:text-black text-[9px] font-mono font-bold transition-colors"
-                              title="Quick Restock +10"
+                              className="px-2 py-0.5 rounded-lg border border-[#E7E5E0] bg-white hover:bg-[#0F766E] hover:text-white text-[10px] font-mono font-bold transition-colors"
+                              title="Add 10 units"
                             >
                               +10
                             </button>
                           )}
                         </div>
-                      </td>
-
-                      {/* Sizes */}
-                      <td className="py-3.5 px-4 font-mono text-[10px] text-[#71717A]">
-                        {p.sizes?.join(', ')}
                       </td>
 
                       {/* Featured Toggle */}
@@ -255,8 +281,8 @@ export default function ProductsManagement() {
                           <Star
                             className={`w-4 h-4 mx-auto ${
                               p.isFeatured
-                                ? 'fill-[#D4AF37] stroke-[#D4AF37]'
-                                : 'text-[#8E8E93] opacity-40'
+                                ? 'fill-amber-400 stroke-amber-400'
+                                : 'text-[#D1D5DB]'
                             }`}
                           />
                         </button>
@@ -267,14 +293,14 @@ export default function ProductsManagement() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleEdit(p)}
-                            className="p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-[#71717A] hover:text-[#0B0B0C] dark:hover:text-white transition-colors"
-                            title="Edit Product Details"
+                            className="p-1.5 rounded-lg hover:bg-black/5 text-[#64748B] hover:text-[#0F766E] transition-colors"
+                            title="Edit Product"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(p)}
-                            className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#71717A] hover:text-rose-600 transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-rose-50 text-[#64748B] hover:text-rose-600 transition-colors"
                             title="Delete Product"
                           >
                             <Trash2 className="w-4 h-4" />

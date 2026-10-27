@@ -3,16 +3,15 @@ import React from 'react';
 export default function Logo({
   size = 'md',
   showWordmark = true,
-  showTagline = false,
+  showSubtext = true,
   className = '',
   onClick
 }) {
-  // Size mapping for SVG emblem
   const sizeMap = {
-    sm: { svg: 32, text: 'text-sm', subText: 'text-[9px]' },
-    md: { svg: 42, text: 'text-base', subText: 'text-[10px]' },
-    lg: { svg: 54, text: 'text-xl', subText: 'text-xs' },
-    xl: { svg: 72, text: 'text-2xl', subText: 'text-sm' }
+    sm: { svg: 28, text: 'text-base', subText: 'text-[9px]' },
+    md: { svg: 36, text: 'text-xl', subText: 'text-[10px]' },
+    lg: { svg: 46, text: 'text-2xl', subText: 'text-[11px]' },
+    xl: { svg: 60, text: 'text-3xl', subText: 'text-xs' }
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
@@ -20,120 +19,78 @@ export default function Logo({
   return (
     <div
       onClick={onClick}
-      className={`group flex items-center gap-3 select-none transition-all duration-300 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`group flex items-center gap-2.5 select-none transition-all duration-300 ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
-      {/* Bespoke Scalable Architectural Diamond Emblem */}
-      <div className="relative flex-shrink-0 transition-transform duration-500 ease-out group-hover:scale-105">
+      {/* Bespoke Geometric Fabric & Thread "F" Motif */}
+      <div className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
         <svg
           width={currentSize.svg}
           height={currentSize.svg}
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="overflow-visible"
         >
-          {/* Outer Diamond Frame with hover dash stroke animation */}
-          <polygon
-            points="50,5 95,50 50,95 5,50"
-            className="stroke-[#0B0B0C] dark:stroke-[#FAF9F6] transition-all duration-500 group-hover:stroke-[#D4AF37] dark:group-hover:stroke-[#E5C378]"
+          {/* Outer Rounded Architectural Frame with subtle border */}
+          <rect
+            x="4"
+            y="4"
+            width="92"
+            height="92"
+            rx="24"
+            className="fill-[#0F766E]/10 stroke-[#0F766E] transition-colors duration-300 group-hover:fill-[#0F766E]/15"
             strokeWidth="3.5"
-            strokeLinejoin="round"
           />
 
-          {/* Inner Architectural Diamond Halo */}
-          <polygon
-            points="50,13 87,50 50,87 13,50"
-            className="stroke-[#0B0B0C]/20 dark:stroke-[#FAF9F6]/20 transition-all duration-500 group-hover:stroke-[#D4AF37]/50"
-            strokeWidth="1.2"
-            strokeDasharray="4 3"
-          />
-
-          {/* Interlocking Monogram: 'N' Monogram */}
-          {/* Left upright of N */}
+          {/* Intertwining Woven "F" Structure */}
+          {/* Main vertical upright column */}
           <line
             x1="32"
-            y1="68"
+            y1="24"
             x2="32"
-            y2="32"
-            className="stroke-[#0B0B0C] dark:stroke-[#FAF9F6] transition-all duration-500 group-hover:stroke-[#D4AF37]"
-            strokeWidth="4"
+            y2="76"
+            className="stroke-[#0F766E]"
+            strokeWidth="8"
             strokeLinecap="round"
           />
-          {/* Diagonal stroke of N */}
+
+          {/* Top horizontal beam with fabric fold point */}
           <line
             x1="32"
-            y1="32"
-            x2="56"
-            y2="68"
-            className="stroke-[#0B0B0C] dark:stroke-[#FAF9F6] transition-all duration-500 group-hover:stroke-[#0B0B0C] dark:group-hover:stroke-[#FAF9F6]"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-          {/* Right upright of N */}
-          <line
-            x1="56"
-            y1="68"
-            x2="56"
-            y2="32"
-            className="stroke-[#0B0B0C] dark:stroke-[#FAF9F6] transition-all duration-500 group-hover:stroke-[#D4AF37]"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-
-          {/* Interlocking Monogram: 'A' Monogram (Sharp Gold Accent Geometry) */}
-          {/* Left Leg of A */}
-          <line
-            x1="46"
-            y1="68"
-            x2="63"
-            y2="28"
-            className="stroke-[#D4AF37] dark:stroke-[#E5C378] transition-all duration-500 group-hover:stroke-[#0B0B0C] dark:group-hover:stroke-[#FAF9F6]"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-          {/* Right Leg of A */}
-          <line
-            x1="63"
             y1="28"
-            x2="78"
-            y2="68"
-            className="stroke-[#D4AF37] dark:stroke-[#E5C378] transition-all duration-500 group-hover:stroke-[#D4AF37]"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-          {/* Crossbar of A passing through */}
-          <line
-            x1="51"
-            y1="54"
-            x2="73"
-            y2="54"
-            className="stroke-[#D4AF37] dark:stroke-[#E5C378] transition-all duration-500"
-            strokeWidth="3"
+            x2="72"
+            y2="28"
+            className="stroke-[#0F766E]"
+            strokeWidth="8"
             strokeLinecap="round"
           />
 
-          {/* Cardinal Architectural Points */}
-          <circle cx="50" cy="5" r="2" className="fill-[#D4AF37]" />
-          <circle cx="95" cy="50" r="2" className="fill-[#D4AF37]" />
-          <circle cx="50" cy="95" r="2" className="fill-[#D4AF37]" />
-          <circle cx="5" cy="50" r="2" className="fill-[#D4AF37]" />
+          {/* Middle horizontal beam with terracotta accent stitch */}
+          <line
+            x1="32"
+            y1="50"
+            x2="62"
+            y2="50"
+            className="stroke-[#C87D55]"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+
+          {/* Accent woven stitch node */}
+          <circle cx="72" cy="28" r="4.5" className="fill-[#C87D55]" />
+          <circle cx="62" cy="50" r="4.5" className="fill-[#0F766E]" />
+          <circle cx="32" cy="76" r="4.5" className="fill-[#C87D55]" />
         </svg>
       </div>
 
-      {/* Wordmark & Tagline */}
+      {/* Brand Wordmark & Location */}
       {showWordmark && (
         <div className="flex flex-col">
-          <div className="flex items-baseline gap-1.5 leading-none">
-            <span className={`font-editorial font-bold tracking-[0.25em] text-[#0B0B0C] dark:text-[#FAF9F6] transition-colors duration-300 ${currentSize.text}`}>
-              NOCTURNE
-            </span>
-            <span className={`font-sans font-light tracking-[0.35em] text-[#71717A] dark:text-[#A1A1AA] transition-colors duration-300 ${currentSize.subText}`}>
-              ATELIER
-            </span>
-          </div>
-          {showTagline && (
-            <span className="text-[10px] tracking-[0.18em] uppercase text-[#8E8E93] dark:text-[#7A7A82] mt-1 italic font-sans font-medium">
-              Architecture for the Modern Silhouette
+          <span className={`font-display font-extrabold tracking-[0.16em] text-[#1E2329] leading-tight transition-colors duration-300 group-hover:text-[#0F766E] ${currentSize.text}`}>
+            FABRICAS
+          </span>
+          {showSubtext && (
+            <span className={`font-sans font-medium tracking-[0.25em] uppercase text-[#64748B] -mt-0.5 ${currentSize.subText}`}>
+              Karachi
             </span>
           )}
         </div>

@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import {
-  Settings,
   Store,
   DollarSign,
   ShieldCheck,
-  RefreshCw,
   Download,
   Save,
-  CheckCircle2,
-  AlertTriangle,
-  Sliders
+  Plus,
+  Trash2,
+  Phone,
+  Mail,
+  RefreshCw,
+  FolderTree
 } from 'lucide-react';
 
 export default function SettingsView() {
   const {
     settings,
     updateSettings,
+    allCategories,
+    addCategory,
+    removeCategory,
     resetDemoData,
-    exportDataJSON,
-    showToast
+    exportDataJSON
   } = useStore();
 
   const [form, setForm] = useState({ ...settings });
   const [hasChanges, setHasChanges] = useState(false);
+  const [newCatInput, setNewCatInput] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,19 +40,22 @@ export default function SettingsView() {
     e.preventDefault();
     updateSettings({
       ...form,
-      taxRate: Number(form.taxRate),
-      flatShippingFee: Number(form.flatShippingFee),
-      freeShippingThreshold: Number(form.freeShippingThreshold)
+      shippingFee: Number(form.shippingFee || 0),
+      freeShippingThreshold: Number(form.freeShippingThreshold || 0)
     });
     setHasChanges(false);
   };
 
+  const handleAddCat = (e) => {
+    e.preventDefault();
+    if (newCatInput.trim()) {
+      addCategory(newCatInput.trim());
+      setNewCatInput('');
+    }
+  };
+
   const handleResetData = () => {
-    if (
-      window.confirm(
-        'Are you sure you want to restore the default architectural catalog, demo orders, and settings? Any newly created products or placed orders will be cleared.'
-      )
-    ) {
+    if (window.confirm('Reset all catalog products, orders, and settings to a clean initial state?')) {
       resetDemoData();
       setForm({ ...settings });
       setHasChanges(false);
@@ -61,21 +68,21 @@ export default function SettingsView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono uppercase tracking-[0.2em] text-[#D4AF37]">
-            Configuration & Commerce Engine
+          <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
+            Store Configuration
           </span>
-          <h1 className="text-2xl sm:text-3xl font-editorial font-bold uppercase tracking-tight text-[#0B0B0C] dark:text-[#FAF9F6] mt-1">
-            Store Settings
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#1E2329] mt-0.5">
+            Settings & Categories
           </h1>
         </div>
 
         <button
           onClick={handleSave}
           disabled={!hasChanges}
-          className={`px-6 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md ${
+          className={`px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all flex items-center gap-2 shadow-sm ${
             hasChanges
-              ? 'bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] hover:bg-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-[#0B0B0C] active:scale-98'
-              : 'bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-600 cursor-not-allowed'
+              ? 'bg-[#0F766E] text-white hover:bg-[#0D5C58] active:scale-98'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
           <Save className="w-4 h-4" />
@@ -85,70 +92,85 @@ export default function SettingsView() {
 
       <form onSubmit={handleSave} className="space-y-8">
         
-        {/* Module 1: Brand & Storefront Identity */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] shadow-sm space-y-5">
-          <div className="flex items-center gap-3 border-b border-[#E4E4E0] dark:border-[#202025] pb-4">
-            <div className="p-2.5 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+        {/* Module 1: Brand & Contact Info */}
+        <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-5">
+          <div className="flex items-center gap-3 border-b border-[#E7E5E0] pb-4">
+            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
               <Store className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-editorial font-bold uppercase tracking-wider">
-                Brand & Storefront Identity
+              <h3 className="text-base font-display font-bold text-[#1E2329]">
+                Brand & Official Contact
               </h3>
-              <p className="text-xs text-[#71717A] dark:text-[#A1A1AA]">
-                Live brand representation across metadata, navigation, and footer.
+              <p className="text-xs text-[#64748B]">
+                Displayed in the header, footer, contact page, and WhatsApp order messages.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-                Storefront Name
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                Store Name
               </label>
               <input
                 type="text"
                 name="storeName"
                 value={form.storeName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-                Atelier Tagline
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                Tagline
               </label>
               <input
                 type="text"
                 name="tagline"
                 value={form.tagline}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                Official Email (Contact Page & Receipts)
+              </label>
+              <input
+                type="email"
+                name="supportEmail"
+                value={form.supportEmail}
+                onChange={handleChange}
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                WhatsApp Phone Number
+              </label>
+              <input
+                type="text"
+                name="whatsappNumber"
+                value={form.whatsappNumber}
+                onChange={handleChange}
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-              Concierge Support Email
-            </label>
-            <input
-              type="email"
-              name="supportEmail"
-              value={form.supportEmail}
-              onChange={handleChange}
-              className="w-full px-3 py-2 text-xs rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
-            />
-          </div>
-
-          {/* Promo Announcement Banner */}
-          <div className="pt-2 border-t border-[#E4E4E0]/60 dark:border-[#202025]/60 space-y-3">
+          {/* Top Promo Announcement Banner */}
+          <div className="pt-4 border-t border-[#E7E5E0] space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-semibold block">Top Announcement Promo Banner</span>
-                <span className="text-[11px] text-[#71717A]">
-                  Broadcast promotional discount codes or free delivery alerts.
+                <span className="text-xs font-bold text-[#1E2329] block">
+                  Top Announcement Promo Banner
+                </span>
+                <span className="text-[11px] text-[#64748B]">
+                  Displays at the very top of the storefront.
                 </span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
@@ -159,42 +181,97 @@ export default function SettingsView() {
                   onChange={handleChange}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D4AF37]" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0F766E]" />
               </label>
             </div>
 
-            <div>
-              <input
-                type="text"
-                name="promoBannerText"
-                value={form.promoBannerText}
-                onChange={handleChange}
-                placeholder="Announcement banner text..."
-                className="w-full px-3 py-2 text-xs rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none font-mono"
-              />
-            </div>
+            <input
+              type="text"
+              name="promoBannerText"
+              value={form.promoBannerText}
+              onChange={handleChange}
+              className="w-full px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
+            />
           </div>
         </div>
 
-        {/* Module 2: Commerce, Tax & Shipping Rules */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] shadow-sm space-y-5">
-          <div className="flex items-center gap-3 border-b border-[#E4E4E0] dark:border-[#202025] pb-4">
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <DollarSign className="w-5 h-5" />
+        {/* Module 2: Category Management (Populates Navbar Sub-menu) */}
+        <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-5">
+          <div className="flex items-center gap-3 border-b border-[#E7E5E0] pb-4">
+            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
+              <FolderTree className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-editorial font-bold uppercase tracking-wider">
-                Commerce, Tax & Shipping Rules
+              <h3 className="text-base font-display font-bold text-[#1E2329]">
+                Shop Sub-Menu & Catalog Categories
               </h3>
-              <p className="text-xs text-[#71717A] dark:text-[#A1A1AA]">
-                Configures real-time calculations in customer shopping cart and checkout.
+              <p className="text-xs text-[#64748B]">
+                Categories configured here automatically appear in the storefront's "Shop" dropdown menu.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Add Category */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newCatInput}
+              onChange={(e) => setNewCatInput(e.target.value)}
+              placeholder="Add new category (e.g. Silk Tunics, Shawls, Western)"
+              className="flex-1 px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
+            />
+            <button
+              type="button"
+              onClick={handleAddCat}
+              className="px-5 py-2 rounded-xl bg-[#0F766E] text-white text-xs font-semibold hover:bg-[#0D5C58] flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Category</span>
+            </button>
+          </div>
+
+          {/* Category Pills list */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            {allCategories.map((cat) => (
+              <div
+                key={cat}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7E5E0] text-xs font-medium text-[#1E2329]"
+              >
+                <span>{cat}</span>
+                {allCategories.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeCategory(cat)}
+                    className="text-[#94A3B8] hover:text-rose-600 p-0.5"
+                    title={`Remove ${cat}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Module 3: Delivery Rules & Currency */}
+        <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-5">
+          <div className="flex items-center gap-3 border-b border-[#E7E5E0] pb-4">
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+              <DollarSign className="w-5 h-5" />
+            </div>
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
+              <h3 className="text-base font-display font-bold text-[#1E2329]">
+                Currency & Delivery Rates
+              </h3>
+              <p className="text-xs text-[#64748B]">
+                Configured in Pakistani Rupees (PKR).
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
                 Currency Symbol
               </label>
               <input
@@ -202,128 +279,79 @@ export default function SettingsView() {
                 name="currencySymbol"
                 value={form.currencySymbol}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
+                className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl bg-white border border-[#E7E5E0]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-                Tax Rate (%)
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                Delivery Fee (Rs. PKR)
               </label>
               <input
                 type="number"
-                name="taxRate"
-                step="0.1"
-                min="0"
-                value={form.taxRate}
+                name="shippingFee"
+                value={form.shippingFee}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
+                min="0"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-white border border-[#E7E5E0]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-                Flat Shipping Fee ($)
-              </label>
-              <input
-                type="number"
-                name="flatShippingFee"
-                min="0"
-                value={form.flatShippingFee}
-                onChange={handleChange}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#71717A] mb-1">
-                Free Shipping Threshold ($)
+              <label className="block text-xs font-semibold text-[#1E2329] mb-1">
+                Free Delivery Threshold (Rs. PKR)
               </label>
               <input
                 type="number"
                 name="freeShippingThreshold"
-                min="0"
                 value={form.freeShippingThreshold}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-[#FAF9F6] dark:bg-[#18181B] border border-[#E4E4E0] dark:border-[#27272A] focus:outline-none"
+                min="0"
+                className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-white border border-[#E7E5E0]"
               />
             </div>
           </div>
         </div>
 
-        {/* Module 3: Security & Data Backup Utilities */}
-        <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#121214] border border-[#E4E4E0] dark:border-[#202025] shadow-sm space-y-5">
-          <div className="flex items-center gap-3 border-b border-[#E4E4E0] dark:border-[#202025] pb-4">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
+        {/* Module 4: Data Utilities */}
+        <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-editorial font-bold uppercase tracking-wider">
-                Security & Data Utilities
-              </h3>
-              <p className="text-xs text-[#71717A] dark:text-[#A1A1AA]">
-                Maintain system integrity, export backups, or reset demo catalogue data.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-[#E4E4E0] dark:border-[#27272A] flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#71717A] block">
-                  Current Admin Handle
-                </span>
-                <span className="font-mono font-bold text-sm text-[#0B0B0C] dark:text-white">
-                  {settings.adminUsername}
-                </span>
-              </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold">
-                Active Session
-              </span>
-            </div>
-
-            <div className="p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-[#E4E4E0] dark:border-[#27272A] flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#71717A] block">
-                  Export Archival Backup
-                </span>
-                <span className="text-xs text-[#52525B] dark:text-[#A1A1AA]">
-                  Full JSON export of products & orders
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={exportDataJSON}
-                className="px-3.5 py-1.5 rounded-lg border border-[#E4E4E0] dark:border-[#27272A] hover:border-black dark:hover:border-white text-xs font-semibold uppercase font-mono flex items-center gap-1.5 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export JSON</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Reset Demo Data Danger Zone */}
-          <div className="p-4 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h4 className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase font-mono tracking-wider flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4" />
-                Restore Default Demo Architecture
+              <h4 className="text-xs font-bold text-[#1E2329] uppercase tracking-wider">
+                Store Data Backup
               </h4>
-              <p className="text-[11px] text-rose-600/90 dark:text-rose-400/90 mt-0.5">
-                Restores the initial 12 luxury garments, 8 historical orders, and default settings.
+              <p className="text-xs text-[#64748B] mt-0.5">
+                Download a clean JSON backup of all products, categories, and WhatsApp orders.
               </p>
             </div>
-
             <button
               type="button"
-              onClick={handleResetData}
-              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold uppercase tracking-wider font-mono flex items-center justify-center gap-2 transition-colors flex-shrink-0 shadow-sm"
+              onClick={exportDataJSON}
+              className="px-4 py-2 rounded-xl border border-[#E7E5E0] hover:border-[#0F766E] text-xs font-semibold text-[#1E2329] flex items-center gap-1.5 transition-colors"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Reset Demo Store Data</span>
+              <Download className="w-3.5 h-3.5 text-[#0F766E]" />
+              <span>Export JSON</span>
             </button>
           </div>
 
+          <div className="pt-4 border-t border-[#E7E5E0] flex items-center justify-between">
+            <div>
+              <h4 className="text-xs font-bold text-rose-700 uppercase tracking-wider">
+                Reset Store Data
+              </h4>
+              <p className="text-xs text-[#64748B] mt-0.5">
+                Clears all custom products, orders, and restores clean defaults.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetData}
+              className="px-4 py-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-semibold transition-colors flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Reset Catalog</span>
+            </button>
+          </div>
         </div>
 
       </form>

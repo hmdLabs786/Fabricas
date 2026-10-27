@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { X, Heart, ShoppingBag, ShieldCheck, Truck, RefreshCw, Check, Star } from 'lucide-react';
+import { X, Heart, ShoppingBag, Truck, ShieldCheck, Check } from 'lucide-react';
 
 export default function QuickViewModal() {
   const {
@@ -20,10 +20,10 @@ export default function QuickViewModal() {
 
   useEffect(() => {
     if (product) {
-      setSelectedSize(product.sizes ? product.sizes[0] : 'One Size');
-      setSelectedColor(product.colors && product.colors[0] ? product.colors[0].name : 'Default');
+      setSelectedSize(product.hasSizes && product.sizes?.length ? product.sizes[0] : '');
+      setSelectedColor(product.hasColors && product.colors?.length ? product.colors[0]?.name : '');
       setQuantity(1);
-      setActiveImage(product.image);
+      setActiveImage(product.image || '');
     }
   }, [product]);
 
@@ -41,15 +41,13 @@ export default function QuickViewModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
-      
-      {/* Modal Container */}
-      <div className="relative w-full max-w-4xl bg-[#FAF9F6] dark:bg-[#121214] text-[#0B0B0C] dark:text-[#FAF9F6] rounded-2xl shadow-2xl border border-[#E4E4E0] dark:border-[#27272A] overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-[#E7E5E0] overflow-hidden my-8">
         
-        {/* Close Button */}
+        {/* Close button */}
         <button
           onClick={() => setIsQuickViewOpen(false)}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-[#0B0B0C] dark:text-[#FAF9F6] transition-colors"
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/90 hover:bg-white text-[#64748B] hover:text-[#1E2329] shadow-sm transition-colors"
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
@@ -57,44 +55,50 @@ export default function QuickViewModal() {
 
         <div className="grid grid-cols-1 md:grid-cols-2">
           
-          {/* Left: Imagery Gallery */}
-          <div className="relative bg-[#ECECE8] dark:bg-[#18181B] p-6 flex flex-col justify-between">
-            <div className="aspect-[3/4] w-full rounded-xl overflow-hidden relative shadow-inner">
-              <img
-                src={activeImage}
-                alt={product.name}
-                className="w-full h-full object-cover object-center transition-all duration-500"
-              />
-              
-              {/* Floating badges */}
-              <div className="absolute top-3 left-3 flex flex-col gap-1">
+          {/* Left: Product Image */}
+          <div className="bg-[#F8F7F4] p-6 flex flex-col justify-between">
+            <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden relative shadow-inner bg-white">
+              {activeImage ? (
+                <img
+                  src={activeImage}
+                  alt={product.name}
+                  className="w-full h-full object-cover object-center"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[#94A3B8]">
+                  <ShoppingBag className="w-12 h-12 opacity-30" />
+                </div>
+              )}
+
+              {/* Status Badges */}
+              <div className="absolute top-3 left-3">
                 {isSoldOut ? (
-                  <span className="px-3 py-1 rounded bg-black/90 text-white font-mono text-[10px] uppercase tracking-widest">
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#1E2329] text-white">
                     Sold Out
                   </span>
                 ) : isLowStock ? (
-                  <span className="px-3 py-1 rounded bg-amber-500 text-white font-mono text-[10px] uppercase tracking-widest">
-                    Only {product.stock} Remaining
+                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-amber-600 text-white">
+                    Only {product.stock} Left
                   </span>
                 ) : null}
               </div>
             </div>
 
-            {/* Thumbnail switcher */}
+            {/* Thumbnail switcher if hoverImage exists */}
             {product.hoverImage && (
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => setActiveImage(product.image)}
-                  className={`w-14 h-18 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeImage === product.image ? 'border-[#0B0B0C] dark:border-[#D4AF37]' : 'border-transparent opacity-60'
+                  className={`w-14 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                    activeImage === product.image ? 'border-[#0F766E]' : 'border-transparent opacity-60'
                   }`}
                 >
                   <img src={product.image} alt="Thumbnail 1" className="w-full h-full object-cover" />
                 </button>
                 <button
                   onClick={() => setActiveImage(product.hoverImage)}
-                  className={`w-14 h-18 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeImage === product.hoverImage ? 'border-[#0B0B0C] dark:border-[#D4AF37]' : 'border-transparent opacity-60'
+                  className={`w-14 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                    activeImage === product.hoverImage ? 'border-[#0F766E]' : 'border-transparent opacity-60'
                   }`}
                 >
                   <img src={product.hoverImage} alt="Thumbnail 2" className="w-full h-full object-cover" />
@@ -103,66 +107,57 @@ export default function QuickViewModal() {
             )}
           </div>
 
-          {/* Right: Product Details & Purchase Actions */}
+          {/* Right: Details & Add to Cart */}
           <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
-            
             <div className="space-y-4">
-              {/* Category, SKU, and Rating */}
-              <div className="flex items-center justify-between">
-                <span className="text-xs uppercase font-mono tracking-[0.25em] text-[#D4AF37]">
-                  {product.category} • {product.sku}
+              
+              {/* Category & SKU */}
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-mono uppercase tracking-widest font-semibold text-[#0F766E]">
+                  {product.category || 'Clothing'}
                 </span>
-                <div className="flex items-center gap-1 text-xs text-[#71717A] dark:text-[#A1A1AA]">
-                  <Star className="w-3.5 h-3.5 fill-[#D4AF37] stroke-[#D4AF37]" />
-                  <span>{product.rating}</span>
-                  <span>({product.reviewsCount} reviews)</span>
-                </div>
+                {product.sku && (
+                  <span className="font-mono text-[#94A3B8]">{product.sku}</span>
+                )}
               </div>
 
               {/* Title & Price */}
               <div>
-                <h2 className="text-2xl font-editorial font-bold uppercase tracking-tight text-[#0B0B0C] dark:text-[#FAF9F6]">
+                <h2 className="text-xl sm:text-2xl font-display font-bold text-[#1E2329]">
                   {product.name}
                 </h2>
-                <div className="flex items-baseline gap-3 mt-2">
-                  <span className="text-2xl font-bold text-[#0B0B0C] dark:text-[#FAF9F6]">
+                <div className="flex items-baseline gap-3 mt-1.5">
+                  <span className="text-xl font-bold font-mono text-[#1E2329]">
                     {formatPrice(product.price)}
                   </span>
                   {hasSale && (
-                    <span className="text-base text-[#71717A] dark:text-[#A1A1AA] line-through">
+                    <span className="text-sm font-mono text-[#94A3B8] line-through">
                       {formatPrice(product.comparePrice)}
-                    </span>
-                  )}
-                  {hasSale && (
-                    <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      SAVE {Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%
                     </span>
                   )}
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-xs sm:text-sm text-[#52525B] dark:text-[#A1A1AA] leading-relaxed">
-                {product.description}
-              </p>
+              {product.description && (
+                <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
+                  {product.description}
+                </p>
+              )}
 
-              {/* Color Swatch Picker */}
-              {product.colors && product.colors.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-mono uppercase tracking-wider text-[#71717A] dark:text-[#A1A1AA]">
-                      Color: <strong className="text-[#0B0B0C] dark:text-[#FAF9F6]">{selectedColor}</strong>
-                    </span>
-                  </div>
+              {/* Colors (ONLY IF ENABLED FOR THIS PRODUCT) */}
+              {product.hasColors && product.colors && product.colors.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <span className="text-xs font-medium text-[#475569] block">
+                    Color: <strong className="text-[#1E2329]">{selectedColor}</strong>
+                  </span>
                   <div className="flex items-center gap-2">
                     {product.colors.map((c) => (
                       <button
                         key={c.name}
                         onClick={() => setSelectedColor(c.name)}
-                        className={`group relative p-0.5 rounded-full border-2 transition-all ${
-                          selectedColor === c.name
-                            ? 'border-[#0B0B0C] dark:border-[#D4AF37] scale-110'
-                            : 'border-transparent hover:border-black/30 dark:hover:border-white/30'
+                        className={`p-0.5 rounded-full border-2 transition-all ${
+                          selectedColor === c.name ? 'border-[#0F766E] scale-110' : 'border-transparent'
                         }`}
                         title={c.name}
                       >
@@ -176,57 +171,67 @@ export default function QuickViewModal() {
                 </div>
               )}
 
-              {/* Size Selector */}
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-mono uppercase tracking-wider text-[#71717A] dark:text-[#A1A1AA]">
-                      Select Size: <strong className="text-[#0B0B0C] dark:text-[#FAF9F6]">{selectedSize}</strong>
-                    </span>
-                    <button className="text-[11px] underline text-[#71717A] hover:text-[#0B0B0C] dark:hover:text-white">
-                      Size Guide
-                    </button>
+              {/* Sizes (ONLY IF ENABLED FOR THIS PRODUCT) */}
+              {product.hasSizes && product.sizes && product.sizes.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <span className="text-xs font-medium text-[#475569] block">
+                    Size: <strong className="text-[#1E2329]">{selectedSize}</strong>
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-medium transition-all ${
+                          selectedSize === size
+                            ? 'bg-[#0F766E] text-white font-bold shadow-xs'
+                            : 'border border-[#E7E5E0] bg-white text-[#1E2329] hover:border-[#0F766E]'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
                   </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {product.sizes.map((size) => {
-                      const isSelected = selectedSize === size;
-                      return (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSize(size)}
-                          className={`py-2 rounded-lg text-xs font-mono font-medium transition-all ${
-                            isSelected
-                              ? 'bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] font-bold shadow-md'
-                              : 'border border-[#E4E4E0] dark:border-[#27272A] hover:border-[#0B0B0C] dark:hover:border-white'
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
-                  </div>
+                </div>
+              )}
+
+              {/* Fabric Details (ONLY IF ENABLED FOR THIS PRODUCT) */}
+              {product.hasFabric && product.fabric && (
+                <div className="p-3 bg-[#F8F7F4] rounded-xl text-xs space-y-0.5">
+                  <span className="font-semibold text-[#475569] block text-[11px] uppercase tracking-wider">
+                    Fabric / Material:
+                  </span>
+                  <p className="text-[#334155]">{product.fabric}</p>
+                </div>
+              )}
+
+              {/* Custom Note / Specification (if any) */}
+              {product.hasCustomNote && product.customNote && (
+                <div className="p-3 bg-[#F8F7F4] rounded-xl text-xs space-y-0.5">
+                  <span className="font-semibold text-[#475569] block text-[11px] uppercase tracking-wider">
+                    Additional Details:
+                  </span>
+                  <p className="text-[#334155]">{product.customNote}</p>
                 </div>
               )}
 
               {/* Quantity Stepper */}
               {!isSoldOut && (
                 <div className="flex items-center gap-4 pt-2">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#71717A] dark:text-[#A1A1AA]">
-                    Quantity:
-                  </span>
-                  <div className="flex items-center border border-[#E4E4E0] dark:border-[#27272A] rounded-lg">
+                  <span className="text-xs font-medium text-[#475569]">Quantity:</span>
+                  <div className="flex items-center border border-[#E7E5E0] bg-white rounded-xl">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3 py-1.5 text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      className="px-3 py-1 text-sm text-[#64748B] hover:text-black"
                     >
                       -
                     </button>
-                    <span className="px-3 py-1.5 text-xs font-mono font-bold min-w-[32px] text-center">
+                    <span className="px-3 py-1 text-xs font-mono font-bold min-w-[32px] text-center">
                       {quantity}
                     </span>
                     <button
                       onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                      className="px-3 py-1.5 text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      className="px-3 py-1 text-sm text-[#64748B] hover:text-black"
                     >
                       +
                     </button>
@@ -234,55 +239,45 @@ export default function QuickViewModal() {
                 </div>
               )}
 
-              {/* Fabric & Care */}
-              {product.fabricCare && (
-                <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl text-xs space-y-1">
-                  <span className="font-semibold uppercase tracking-wider text-[10px] text-[#71717A] dark:text-[#A1A1AA] block">
-                    Material & Provenance:
-                  </span>
-                  <p className="text-[#52525B] dark:text-[#D4D4D8] text-[11px] leading-relaxed">
-                    {product.fabricCare}
-                  </p>
-                </div>
-              )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3 pt-4 border-t border-[#E4E4E0] dark:border-[#27272A]">
+            {/* Actions */}
+            <div className="space-y-3 pt-4 border-t border-[#E7E5E0]">
               <div className="flex items-center gap-3">
                 <button
                   disabled={isSoldOut}
                   onClick={handleAddToBag}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-xs uppercase tracking-[0.2em] shadow-lg transition-all duration-300 ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl font-semibold text-xs tracking-wide transition-all shadow-md ${
                     isSoldOut
-                      ? 'bg-gray-300 dark:bg-gray-800 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#0B0B0C] text-[#FAF9F6] dark:bg-[#FAF9F6] dark:text-[#0B0B0C] hover:bg-[#D4AF37] dark:hover:bg-[#D4AF37] dark:hover:text-[#0B0B0C] active:scale-95'
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#0F766E] text-white hover:bg-[#0D5C58] active:scale-98'
                   }`}
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>{isSoldOut ? 'Sold Out' : `Add To Bag • ${formatPrice(product.price * quantity)}`}</span>
+                  <span>
+                    {isSoldOut ? 'Sold Out' : `Add to Bag • ${formatPrice(product.price * quantity)}`}
+                  </span>
                 </button>
 
                 <button
                   onClick={() => toggleWishlist(product.id)}
-                  className={`p-3.5 rounded-xl border border-[#E4E4E0] dark:border-[#27272A] hover:border-[#0B0B0C] dark:hover:border-white transition-all ${
-                    isSaved ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-[#71717A]'
+                  className={`p-3.5 rounded-2xl border transition-all ${
+                    isSaved ? 'text-[#C87D55] border-[#C87D55] bg-[#C87D55]/5' : 'text-[#64748B] border-[#E7E5E0] hover:border-[#1E2329]'
                   }`}
-                  aria-label="Save to Wishlist"
+                  aria-label="Add to favorites"
                 >
-                  <Heart className={`w-5 h-5 ${isSaved ? 'fill-[#D4AF37]' : ''}`} />
+                  <Heart className={`w-5 h-5 ${isSaved ? 'fill-[#C87D55]' : ''}`} />
                 </button>
               </div>
 
-              {/* Luxury Guarantees */}
-              <div className="grid grid-cols-2 gap-2 text-[10px] text-[#71717A] dark:text-[#A1A1AA] pt-1">
+              <div className="flex items-center justify-center gap-6 text-[11px] text-[#64748B] pt-1">
                 <div className="flex items-center gap-1.5">
-                  <Truck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Complimentary Shipping $250+</span>
+                  <Truck className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <span>Delivery across Pakistan</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Certified Florentine Tailoring</span>
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <span>100% Quality Guaranteed</span>
                 </div>
               </div>
             </div>

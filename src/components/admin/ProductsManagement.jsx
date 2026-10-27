@@ -26,13 +26,13 @@ export default function ProductsManagement() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  const filteredProducts = products.filter((p) => {
+  const filteredProducts = (products || []).filter((p) => {
+    if (!p) return false;
     const term = searchTerm.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(term) ||
-      (p.sku && p.sku.toLowerCase().includes(term)) ||
-      (p.fabric && p.fabric.toLowerCase().includes(term))
-    );
+    const name = (p.name || '').toLowerCase();
+    const sku = (p.sku || '').toLowerCase();
+    const fabric = (p.fabric || '').toLowerCase();
+    return name.includes(term) || sku.includes(term) || fabric.includes(term);
   });
 
   const handleEdit = (prod) => {
@@ -149,7 +149,7 @@ export default function ProductsManagement() {
                               {p.name}
                             </p>
                             <span className="text-[10px] text-[#64748B] font-mono">
-                              ID: {p.id.slice(-6)}
+                              ID: {String(p.id || '').slice(-6)}
                             </span>
                           </div>
                         </div>

@@ -12,7 +12,7 @@ export default function ProductCard({ product }) {
   } = useStore();
 
   const [isHovered, setIsHovered] = useState(false);
-  const isSaved = wishlist.includes(product.id);
+  const isSaved = (wishlist || []).includes(product.id);
   const hasSale = product.comparePrice && product.comparePrice > product.price;
 
   // Use primary cover image and optional secondary hover image

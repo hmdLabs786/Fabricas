@@ -43,13 +43,17 @@ export default function OrdersManagement() {
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = (orders || []).filter((order) => {
+    if (!order) return false;
     const matchesTab = activeTab === 'All' || order.status === activeTab;
     const term = searchTerm.toLowerCase();
+    const orderId = String(order.id || '').toLowerCase();
+    const customerName = String(order.customer?.name || '').toLowerCase();
+    const customerPhone = String(order.customer?.phone || '');
     const matchesSearch =
-      order.id.toLowerCase().includes(term) ||
-      order.customer.name.toLowerCase().includes(term) ||
-      order.customer.phone.includes(term);
+      orderId.includes(term) ||
+      customerName.includes(term) ||
+      customerPhone.includes(term);
     return matchesTab && matchesSearch;
   });
 

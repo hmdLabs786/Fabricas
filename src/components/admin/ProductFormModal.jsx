@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { compressImageFile } from '../../utils/imageCompressor';
 import {
   X,
   Plus,
@@ -11,7 +12,8 @@ import {
   Image as ImageIcon,
   Check,
   Sparkles,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Loader2
 } from 'lucide-react';
 
 export default function ProductFormModal({ product, onClose }) {
@@ -44,6 +46,8 @@ export default function ProductFormModal({ product, onClose }) {
   const [showUrlFallback, setShowUrlFallback] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'Free Size'];
 
@@ -117,38 +121,54 @@ export default function ProductFormModal({ product, onClose }) {
   };
 
   // MULTIPLE IMAGE UPLOAD HANDLERS
-  const processFiles = (files) => {
+  const processFiles = async (files) => {
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     if (!validFiles.length) {
-      showToast('Please select valid image files', 'error');
+      showToast('Please select valid image files (JPG, PNG, WEBP)', 'error');
       return;
     }
 
-    let loadedCount = 0;
-    const newImages = [];
+    if (images.length + validFiles.length > 10) {
+      showToast('Maximum 10 images allowed per product', 'warning');
+    }
 
-    validFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        newImages.push(e.target.result);
-        loadedCount++;
-        if (loadedCount === validFiles.length) {
-          setImages(prev => [...prev, ...newImages]);
-          showToast(`Uploaded ${loadedCount} image${loadedCount > 1 ? 's' : ''}`, 'success');
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    const filesToProcess = validFiles.slice(0, Math.max(0, 10 - images.length));
+    if (!filesToProcess.length) return;
+
+    setIsCompressing(true);
+    try {
+      showToast(`Optimizing ${filesToProcess.length} image${filesToProcess.length > 1 ? 's' : ''}...`, 'info');
+
+      // Compress all files concurrently using client-side canvas
+      const compressedList = await Promise.all(
+        filesToProcess.map(file => compressImageFile(file, 1000, 1000, 0.75))
+      );
+
+      const successful = compressedList.filter(Boolean);
+      if (successful.length > 0) {
+        setImages(prev => [...prev, ...successful]);
+        showToast(`Added ${successful.length} optimized photo${successful.length > 1 ? 's' : ''}`, 'success');
+      } else {
+        showToast('Could not process selected image files', 'error');
+      }
+    } catch (err) {
+      console.error('Image compression error:', err);
+      showToast('Error processing photos. Please try different images.', 'error');
+    } finally {
+      setIsCompressing(false);
+    }
   };
 
   const handleFileInputChange = (e) => {
-    processFiles(e.target.files);
+    if (e.target.files && e.target.files.length > 0) {
+      processFiles(e.target.files);
+    }
     e.target.value = ''; // reset so same files can be re-selected if desired
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    setIsDragging(true);
+    if (!isCompressing) setIsDragging(true);
   };
 
   const handleDragLeave = () => {
@@ -158,7 +178,7 @@ export default function ProductFormModal({ product, onClose }) {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (!isCompressing && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       processFiles(e.dataTransfer.files);
     }
   };
@@ -198,37 +218,59 @@ export default function ProductFormModal({ product, onClose }) {
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
 
-    if (!formData.name.trim()) {
+    if (isSubmitting) return;
+
+    if (isCompressing) {
+      showToast('Please wait while images are being optimized...', 'info');
+      return;
+    }
+
+    const trimmedName = (formData.name || '').trim();
+    if (!trimmedName) {
       showToast('Please enter a product name', 'error');
       return;
     }
 
-    if (!formData.price) {
-      showToast('Please enter a valid price', 'error');
+    const numPrice = Number(formData.price);
+    if (!formData.price || isNaN(numPrice) || numPrice < 0) {
+      showToast('Please enter a valid price in PKR', 'error');
       return;
     }
 
     if (images.length === 0) {
-      showToast('Please upload at least one product image', 'error');
+      showToast('Please upload at least one product photo', 'error');
       return;
     }
 
-    const payload = {
-      ...formData,
-      price: Number(formData.price),
-      comparePrice: formData.comparePrice ? Number(formData.comparePrice) : null,
-      images: images,
-      image: images[0] || '',
-      hoverImage: images[1] || images[0] || '',
-      inStock: true
-    };
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        ...formData,
+        name: trimmedName,
+        price: numPrice,
+        comparePrice: formData.comparePrice ? Number(formData.comparePrice) : null,
+        images: images,
+        image: images[0] || '',
+        hoverImage: images[1] || images[0] || '',
+        inStock: true
+      };
 
-    if (isEditing) {
-      updateProduct(product.id, payload);
-    } else {
-      addProduct(payload);
+      let result;
+      if (isEditing) {
+        result = updateProduct(product.id, payload);
+      } else {
+        result = addProduct(payload);
+      }
+
+      if (result !== false && result !== null) {
+        onClose();
+      }
+    } catch (err) {
+      console.error('Error submitting product form:', err);
+      showToast('Error saving product to catalog', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
-    onClose();
   };
 
   return (
@@ -376,12 +418,12 @@ export default function ProductFormModal({ product, onClose }) {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !isCompressing && fileInputRef.current?.click()}
               className={`relative border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all ${
                 isDragging
                   ? 'border-[#0F766E] bg-[#0F766E]/5 scale-[0.99]'
                   : 'border-[#E7E5E0] hover:border-[#0F766E]/60 bg-[#FAF8F5]/60 hover:bg-[#FAF8F5]'
-              }`}
+              } ${isCompressing ? 'opacity-80 cursor-wait' : ''}`}
             >
               <input
                 ref={fileInputRef}
@@ -389,27 +431,43 @@ export default function ProductFormModal({ product, onClose }) {
                 multiple
                 accept="image/*"
                 onChange={handleFileInputChange}
+                disabled={isCompressing}
                 className="hidden"
               />
 
-              <div className="w-12 h-12 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] flex items-center justify-center mx-auto mb-3">
-                <Upload className="w-6 h-6" />
-              </div>
+              {isCompressing ? (
+                <div className="py-2 flex flex-col items-center justify-center space-y-2.5">
+                  <Loader2 className="w-8 h-8 text-[#0F766E] animate-spin" />
+                  <p className="text-xs font-semibold text-[#1E2329]">
+                    Optimizing high-resolution images...
+                  </p>
+                  <p className="text-[11px] text-[#64748B]">
+                    Resizing & compressing for fast loading on phones and desktops.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="w-12 h-12 rounded-2xl bg-[#0F766E]/10 text-[#0F766E] flex items-center justify-center mx-auto mb-3">
+                    <Upload className="w-6 h-6" />
+                  </div>
 
-              <p className="text-xs font-semibold text-[#1E2329]">
-                Click to upload multiple images or drag & drop files here
-              </p>
-              <p className="text-[11px] text-[#64748B] mt-1">
-                Supports JPG, PNG, WEBP, and high-resolution clothing photos
-              </p>
+                  <p className="text-xs font-semibold text-[#1E2329]">
+                    Click to upload multiple images or drag & drop files here
+                  </p>
+                  <p className="text-[11px] text-[#64748B] mt-1">
+                    Supports JPG, PNG, WEBP, and high-resolution clothing photos
+                  </p>
 
-              <button
-                type="button"
-                className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white border border-[#E7E5E0] shadow-xs text-xs font-semibold text-[#1E2329] hover:border-[#0F766E] hover:text-[#0F766E]"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Select Images from Computer</span>
-              </button>
+                  <button
+                    type="button"
+                    disabled={isCompressing}
+                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white border border-[#E7E5E0] shadow-xs text-xs font-semibold text-[#1E2329] hover:border-[#0F766E] hover:text-[#0F766E]"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Select Images from Computer</span>
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Uploaded Images Gallery & Rearrangement Controls */}
@@ -781,7 +839,8 @@ export default function ProductFormModal({ product, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#64748B] hover:text-[#1E2329] transition-colors"
+            disabled={isSubmitting || isCompressing}
+            className="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#64748B] hover:text-[#1E2329] transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
@@ -789,9 +848,17 @@ export default function ProductFormModal({ product, onClose }) {
           <button
             type="button"
             onClick={handleSubmit}
-            className="shimmer-hover px-7 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0D5C58] text-white text-xs font-semibold tracking-wider shadow-md shadow-[#0F766E]/20 transition-all hover:scale-102 active:scale-98"
+            disabled={isSubmitting || isCompressing}
+            className="shimmer-hover px-7 py-2.5 rounded-xl bg-[#0F766E] hover:bg-[#0D5C58] text-white text-xs font-semibold tracking-wider shadow-md shadow-[#0F766E]/20 transition-all hover:scale-102 active:scale-98 disabled:opacity-50 flex items-center gap-2"
           >
-            {isEditing ? 'Save Changes' : 'Publish Product'}
+            {isSubmitting || isCompressing ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>{isCompressing ? 'Optimizing Photos...' : 'Saving Garment...'}</span>
+              </>
+            ) : (
+              <span>{isEditing ? 'Save Changes' : 'Publish Product'}</span>
+            )}
           </button>
         </div>
 

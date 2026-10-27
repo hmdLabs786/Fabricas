@@ -3,65 +3,74 @@ import { DEFAULT_PRODUCTS, DEFAULT_ORDERS, DEFAULT_SETTINGS, INITIAL_ACTIVITY_LO
 
 const StoreContext = createContext();
 
+// Safe LocalStorage helpers to prevent QuotaExceededError or JSON parse crashes
+const safeSetStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    console.warn(`[Fabricas Storage] Could not persist ${key}:`, err);
+    // If quota is exceeded, clear ephemeral activity log and retry
+    try {
+      localStorage.removeItem('fabricas_activity');
+      localStorage.setItem(key, JSON.stringify(value));
+      console.info(`[Fabricas Storage] Successfully recovered and saved ${key} after clearing activity cache.`);
+    } catch (retryErr) {
+      console.warn(`[Fabricas Storage] Second write attempt failed for ${key}:`, retryErr);
+    }
+  }
+};
+
+const safeGetStorage = (key, fallback) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch (err) {
+    console.warn(`[Fabricas Storage] Error reading ${key}:`, err);
+    return fallback;
+  }
+};
+
 export function StoreProvider({ children }) {
   // 1. Settings State
-  const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('fabricas_settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
-  });
+  const [settings, setSettings] = useState(() => safeGetStorage('fabricas_settings', DEFAULT_SETTINGS));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_settings', JSON.stringify(settings));
+    safeSetStorage('fabricas_settings', settings);
   }, [settings]);
 
   // 2. Products State (No dummy data by default)
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('fabricas_products');
-    return saved ? JSON.parse(saved) : DEFAULT_PRODUCTS;
-  });
+  const [products, setProducts] = useState(() => safeGetStorage('fabricas_products', DEFAULT_PRODUCTS));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_products', JSON.stringify(products));
+    safeSetStorage('fabricas_products', products);
   }, [products]);
 
   // 3. Orders State (No dummy orders by default)
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('fabricas_orders');
-    return saved ? JSON.parse(saved) : DEFAULT_ORDERS;
-  });
+  const [orders, setOrders] = useState(() => safeGetStorage('fabricas_orders', DEFAULT_ORDERS));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_orders', JSON.stringify(orders));
+    safeSetStorage('fabricas_orders', orders);
   }, [orders]);
 
   // 4. Cart State
-  const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('fabricas_cart');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [cart, setCart] = useState(() => safeGetStorage('fabricas_cart', []));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_cart', JSON.stringify(cart));
+    safeSetStorage('fabricas_cart', cart);
   }, [cart]);
 
   // 5. Wishlist State
-  const [wishlist, setWishlist] = useState(() => {
-    const saved = localStorage.getItem('fabricas_wishlist');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [wishlist, setWishlist] = useState(() => safeGetStorage('fabricas_wishlist', []));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_wishlist', JSON.stringify(wishlist));
+    safeSetStorage('fabricas_wishlist', wishlist);
   }, [wishlist]);
 
   // 6. Activity Feed Log
-  const [activityLog, setActivityLog] = useState(() => {
-    const saved = localStorage.getItem('fabricas_activity');
-    return saved ? JSON.parse(saved) : INITIAL_ACTIVITY_LOG;
-  });
+  const [activityLog, setActivityLog] = useState(() => safeGetStorage('fabricas_activity', INITIAL_ACTIVITY_LOG));
 
   useEffect(() => {
-    localStorage.setItem('fabricas_activity', JSON.stringify(activityLog));
+    safeSetStorage('fabricas_activity', activityLog);
   }, [activityLog]);
 
   const logActivity = (text, type = 'info') => {
@@ -297,47 +306,71 @@ Total Payable: Rs. ${cartTotal.toLocaleString()} (Cash on Delivery)`;
 
   // Product CRUD (Admin)
   const addProduct = (productData) => {
-    const newId = `prod-${Date.now()}`;
-    const newProduct = {
-      ...productData,
-      id: newId,
-      sku: productData.sku || `FAB-${Math.floor(100 + Math.random() * 900)}`,
-      price: Number(productData.price || 0),
-      comparePrice: productData.comparePrice ? Number(productData.comparePrice) : null,
-      images: Array.isArray(productData.images) ? productData.images : [productData.image].filter(Boolean),
-      image: (productData.images && productData.images[0]) || productData.image || '',
-      hoverImage: (productData.images && productData.images[1]) || productData.hoverImage || '',
-      hasSizes: Boolean(productData.hasSizes),
-      hasColors: Boolean(productData.hasColors),
-      hasFabric: Boolean(productData.hasFabric),
-      hasCustomNote: Boolean(productData.hasCustomNote),
-      inStock: true
-    };
+    try {
+      const newId = `prod-${Date.now()}`;
+      const name = (productData.name || 'Garment').trim();
+      const price = Number(productData.price) || 0;
+      const imagesList = Array.isArray(productData.images) && productData.images.length > 0
+        ? productData.images
+        : [productData.image].filter(Boolean);
 
-    setProducts(prev => [newProduct, ...prev]);
-    logActivity(`Added product "${newProduct.name}" (Rs. ${newProduct.price.toLocaleString()})`, 'product');
-    showToast(`Added ${newProduct.name} to catalog`, 'success');
-    return newProduct;
+      const newProduct = {
+        ...productData,
+        id: newId,
+        name,
+        sku: productData.sku || `FAB-${Math.floor(100 + Math.random() * 900)}`,
+        price,
+        comparePrice: productData.comparePrice ? Number(productData.comparePrice) : null,
+        images: imagesList,
+        image: imagesList[0] || productData.image || '',
+        hoverImage: imagesList[1] || productData.hoverImage || imagesList[0] || '',
+        hasSizes: Boolean(productData.hasSizes),
+        sizes: Array.isArray(productData.sizes) ? productData.sizes : ['S', 'M', 'L'],
+        hasColors: Boolean(productData.hasColors),
+        colors: Array.isArray(productData.colors) ? productData.colors : [{ name: 'Default', hex: '#0F766E' }],
+        hasFabric: Boolean(productData.hasFabric),
+        fabric: productData.fabric || '',
+        hasCustomNote: Boolean(productData.hasCustomNote),
+        customNote: productData.customNote || '',
+        inStock: true
+      };
+
+      setProducts(prev => [newProduct, ...(prev || [])]);
+      logActivity(`Added product "${name}" (Rs. ${price.toLocaleString()})`, 'product');
+      showToast(`Added ${name} to catalog`, 'success');
+      return newProduct;
+    } catch (err) {
+      console.error('Error adding product to catalog:', err);
+      showToast('Error saving product. Please try again.', 'error');
+      return null;
+    }
   };
 
   const updateProduct = (id, updatedFields) => {
-    setProducts(prev =>
-      prev.map(p => {
-        if (p.id === id) {
-          const imgs = updatedFields.images || p.images || [];
-          return {
-            ...p,
-            ...updatedFields,
-            images: imgs,
-            image: (imgs && imgs[0]) || updatedFields.image || p.image || '',
-            hoverImage: (imgs && imgs[1]) || updatedFields.hoverImage || p.hoverImage || ''
-          };
-        }
-        return p;
-      })
-    );
-    logActivity(`Updated product "${updatedFields.name || 'item'}"`, 'product');
-    showToast('Product updated successfully', 'success');
+    try {
+      setProducts(prev =>
+        (prev || []).map(p => {
+          if (p.id === id) {
+            const imgs = updatedFields.images || p.images || [];
+            return {
+              ...p,
+              ...updatedFields,
+              images: imgs,
+              image: (imgs && imgs[0]) || updatedFields.image || p.image || '',
+              hoverImage: (imgs && imgs[1]) || updatedFields.hoverImage || p.hoverImage || ''
+            };
+          }
+          return p;
+        })
+      );
+      logActivity(`Updated product "${updatedFields.name || 'item'}"`, 'product');
+      showToast('Product updated successfully', 'success');
+      return true;
+    } catch (err) {
+      console.error('Error updating product:', err);
+      showToast('Error updating product', 'error');
+      return false;
+    }
   };
 
   const deleteProduct = (id) => {

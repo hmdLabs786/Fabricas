@@ -37,7 +37,7 @@ export default function QuickViewModal() {
 
   if (!isQuickViewOpen || !product) return null;
 
-  const isSaved = wishlist.includes(product.id);
+  const isSaved = (wishlist || []).includes(product.id);
   const hasSale = product.comparePrice && product.comparePrice > product.price;
 
   const handleAddToBag = () => {

@@ -184,8 +184,8 @@ export default function DashboardOverview({ onViewOrderDetails }) {
                         #{o.id}
                       </td>
                       <td className="py-3 px-3">
-                        <p className="font-semibold text-[#1E2329]">{o.customer.name}</p>
-                        <p className="text-[11px] text-[#64748B]">{o.customer.phone}</p>
+                        <p className="font-semibold text-[#1E2329]">{o.customer?.name || 'Customer'}</p>
+                        <p className="text-[11px] text-[#64748B]">{o.customer?.phone || ''}</p>
                       </td>
                       <td className="py-3 px-3 font-mono font-bold text-[#1E2329]">
                         {formatPrice(o.total)}

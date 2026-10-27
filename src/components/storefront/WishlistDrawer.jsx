@@ -64,15 +64,15 @@ export default function WishlistDrawer() {
               </div>
             ) : (
               wishlistedProducts.map((product) => {
-                const isSoldOut = product.stock <= 0;
+                const displayImg = (product.images && product.images[0]) || product.image;
                 return (
                   <div
                     key={product.id}
                     className="flex gap-4 p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#E7E5E0] transition-all hover:shadow-xs"
                   >
-                    {product.image ? (
+                    {displayImg ? (
                       <img
-                        src={product.image}
+                        src={displayImg}
                         alt={product.name}
                         onClick={() => {
                           setIsWishlistOpen(false);
@@ -107,7 +107,7 @@ export default function WishlistDrawer() {
                           </button>
                         </div>
                         <p className="text-[11px] font-mono text-[#0F766E] mt-0.5 uppercase">
-                          {product.category}
+                          {product.fabric || 'Karachi Atelier'}
                         </p>
                         <p className="text-xs font-bold font-mono text-[#1E2329] mt-1">
                           {formatPrice(product.price)}
@@ -116,18 +116,13 @@ export default function WishlistDrawer() {
 
                       <div className="pt-2">
                         <button
-                          disabled={isSoldOut}
                           onClick={() => {
                             addToCart(product, product.sizes?.[0] || null, product.colors?.[0]?.name || null, 1);
                           }}
-                          className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
-                            isSoldOut
-                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                              : 'bg-[#0F766E] text-white hover:bg-[#0D5C58]'
-                          }`}
+                          className="w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors bg-[#0F766E] text-white hover:bg-[#0D5C58]"
                         >
                           <ShoppingBag className="w-3 h-3" />
-                          <span>{isSoldOut ? 'Sold Out' : 'Move to Bag'}</span>
+                          <span>Move to Bag</span>
                         </button>
                       </div>
                     </div>

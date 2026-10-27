@@ -5,11 +5,13 @@ import {
   ShoppingBag,
   DollarSign,
   Package,
-  AlertTriangle,
+  Sparkles,
   Clock,
   Plus,
-  Eye
+  Eye,
+  Star
 } from 'lucide-react';
+import WhatsAppIcon from '../common/WhatsAppIcon';
 
 export default function DashboardOverview({ onViewOrderDetails }) {
   const {
@@ -17,16 +19,15 @@ export default function DashboardOverview({ onViewOrderDetails }) {
     products,
     activityLog,
     formatPrice,
-    restockProduct,
-    setAdminSection
+    setAdminSection,
+    toggleFeatured
   } = useStore();
 
   const validOrders = orders.filter((o) => o.status !== 'Cancelled');
   const totalRevenue = validOrders.reduce((sum, o) => sum + (o.total || 0), 0);
   const totalOrdersCount = orders.length;
   const pendingOrdersCount = orders.filter((o) => o.status === 'Pending').length;
-  const totalInventoryUnits = products.reduce((sum, p) => sum + p.stock, 0);
-  const lowStockProducts = products.filter((p) => p.stock < 5);
+  const featuredProducts = products.filter((p) => p.isFeatured);
 
   const latestOrders = orders.slice(0, 5);
 
@@ -54,19 +55,22 @@ export default function DashboardOverview({ onViewOrderDetails }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
-            Karachi Online Store
+            Karachi Atelier Operations
           </span>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#1E2329] mt-0.5">
-            Admin Dashboard
+            Storefront Overview
           </h1>
+          <p className="text-xs text-[#64748B] mt-0.5">
+            Real-time management for catalog pieces and customer WhatsApp orders.
+          </p>
         </div>
 
         <button
           onClick={() => setAdminSection('inventory')}
-          className="px-5 py-2.5 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold tracking-wide transition-all flex items-center gap-2 shadow-sm"
+          className="shimmer-hover px-6 py-3 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold tracking-wider transition-all flex items-center gap-2 shadow-md shadow-[#0F766E]/20"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Product</span>
+          <span>Add New Garment</span>
         </button>
       </div>
 
@@ -74,7 +78,7 @@ export default function DashboardOverview({ onViewOrderDetails }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Revenue */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
+        <div className="p-5 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-[#64748B]">Total Revenue</span>
             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
@@ -84,15 +88,15 @@ export default function DashboardOverview({ onViewOrderDetails }) {
           <h3 className="text-2xl font-bold font-mono text-[#1E2329]">
             {formatPrice(totalRevenue)}
           </h3>
-          <p className="text-[11px] text-[#64748B]">From confirmed WhatsApp orders</p>
+          <p className="text-[11px] text-[#64748B]">Recorded via WhatsApp bookings</p>
         </div>
 
         {/* Total Orders */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
+        <div className="p-5 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[#64748B]">Total Orders</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <ShoppingBag className="w-4 h-4" />
+            <span className="text-xs font-medium text-[#64748B]">WhatsApp Orders</span>
+            <div className="p-2 rounded-xl bg-emerald-50 text-[#25D366]">
+              <WhatsAppIcon className="w-4 h-4" />
             </div>
           </div>
           <h3 className="text-2xl font-bold font-mono text-[#1E2329]">
@@ -103,65 +107,65 @@ export default function DashboardOverview({ onViewOrderDetails }) {
           </p>
         </div>
 
-        {/* Active Inventory */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
+        {/* Active Catalog Designs */}
+        <div className="p-5 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[#64748B]">Active Inventory</span>
+            <span className="text-xs font-medium text-[#64748B]">Collection Pieces</span>
             <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
               <Package className="w-4 h-4" />
             </div>
           </div>
           <h3 className="text-2xl font-bold font-mono text-[#1E2329]">
-            {totalInventoryUnits} units
+            {products.length} Garments
           </h3>
-          <p className="text-[11px] text-[#64748B]">Across {products.length} catalog items</p>
+          <p className="text-[11px] text-[#64748B]">Active in online store</p>
         </div>
 
-        {/* Low Stock Warning */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
+        {/* Featured Showcase Pieces */}
+        <div className="p-5 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[#64748B]">Low Stock Items</span>
-            <div className={`p-2 rounded-xl ${lowStockProducts.length > 0 ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-400'}`}>
-              <AlertTriangle className="w-4 h-4" />
+            <span className="text-xs font-medium text-[#64748B]">Homepage Featured</span>
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-500">
+              <Star className="w-4 h-4 fill-amber-400" />
             </div>
           </div>
           <h3 className="text-2xl font-bold font-mono text-[#1E2329]">
-            {lowStockProducts.length}
+            {featuredProducts.length}
           </h3>
-          <p className="text-[11px] text-[#64748B]">Items with less than 5 units</p>
+          <p className="text-[11px] text-[#64748B]">Displayed on storefront hero</p>
         </div>
 
       </div>
 
-      {/* Latest Orders & Low Stock Quick Action */}
+      {/* Main Grid: Latest Orders & Featured Curation */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Latest Orders (8 Cols) */}
-        <div className="lg:col-span-8 p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-4">
+        {/* Latest Orders Table (8 Cols) */}
+        <div className="lg:col-span-8 p-6 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-display font-bold text-[#1E2329]">
                 Recent Customer Orders
               </h3>
               <p className="text-xs text-[#64748B]">
-                Orders placed via WhatsApp with customer details
+                Latest inquiries and bookings received through WhatsApp
               </p>
             </div>
             <button
               onClick={() => setAdminSection('orders')}
               className="text-xs font-semibold text-[#0F766E] hover:underline"
             >
-              View All ({orders.length}) →
+              View All Orders →
             </button>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-[#E7E5E0] text-[#64748B] uppercase font-mono">
+              <thead className="bg-[#FAF8F5] text-[#64748B] uppercase font-mono border-b border-[#E7E5E0]">
                 <tr>
-                  <th className="py-2.5 px-3">Order Ref</th>
+                  <th className="py-2.5 px-3">Order ID</th>
                   <th className="py-2.5 px-3">Customer</th>
-                  <th className="py-2.5 px-3">Total</th>
+                  <th className="py-2.5 px-3">Total Amount</th>
                   <th className="py-2.5 px-3">Status</th>
                   <th className="py-2.5 px-3 text-right">View</th>
                 </tr>
@@ -169,13 +173,13 @@ export default function DashboardOverview({ onViewOrderDetails }) {
               <tbody className="divide-y divide-[#E7E5E0]">
                 {latestOrders.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="py-8 text-center text-[#64748B]">
-                      No orders placed yet. Orders submitted via WhatsApp will appear here.
+                    <td colSpan="5" className="py-12 text-center text-[#64748B]">
+                      No orders placed yet. Customer orders placed on the storefront will appear here instantly.
                     </td>
                   </tr>
                 ) : (
                   latestOrders.map((o) => (
-                    <tr key={o.id} className="hover:bg-[#FAF8F5]">
+                    <tr key={o.id} className="hover:bg-[#FAF8F5]/80 transition-colors">
                       <td className="py-3 px-3 font-mono font-bold text-[#0F766E]">
                         #{o.id}
                       </td>
@@ -194,7 +198,7 @@ export default function DashboardOverview({ onViewOrderDetails }) {
                       <td className="py-3 px-3 text-right">
                         <button
                           onClick={() => onViewOrderDetails(o)}
-                          className="p-1 rounded-lg hover:bg-black/5 text-[#64748B] hover:text-[#0F766E]"
+                          className="p-1.5 rounded-lg hover:bg-black/5 text-[#64748B] hover:text-[#0F766E]"
                           title="View Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -208,44 +212,57 @@ export default function DashboardOverview({ onViewOrderDetails }) {
           </div>
         </div>
 
-        {/* Low Stock Alerts + Quick Restock (4 Cols) */}
-        <div className="lg:col-span-4 p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-4 flex flex-col justify-between">
+        {/* Featured Homepage Curation (4 Cols) */}
+        <div className="lg:col-span-4 p-6 rounded-3xl bg-white border border-[#E7E5E0] shadow-xs space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              <Sparkles className="w-4 h-4 text-[#C87D55]" />
               <h3 className="text-base font-display font-bold text-[#1E2329]">
-                Low Stock Alerts
+                Featured Curation
               </h3>
             </div>
             <p className="text-xs text-[#64748B] mb-4">
-              Restock popular garments with one click.
+              Garments highlighted on your homepage storefront.
             </p>
 
-            <div className="space-y-3">
-              {lowStockProducts.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#FAF8F5] text-center text-xs text-[#64748B]">
-                  All catalog items have sufficient stock.
+            <div className="space-y-2.5">
+              {featuredProducts.length === 0 ? (
+                <div className="p-4 rounded-2xl bg-[#FAF8F5] text-center text-xs text-[#64748B]">
+                  No garments marked as featured yet. In the Inventory tab, click the star icon on any garment to highlight it on your homepage.
                 </div>
               ) : (
-                lowStockProducts.slice(0, 4).map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs"
-                  >
-                    <div className="truncate mr-2">
-                      <p className="font-semibold truncate text-[#1E2329]">{p.name}</p>
-                      <span className="text-[10px] text-amber-700 font-mono font-bold">
-                        {p.stock} units remaining
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => restockProduct(p.id, 10)}
-                      className="px-2.5 py-1 rounded-lg bg-[#0F766E] text-white hover:bg-[#0D5C58] text-[10px] font-mono font-bold transition-colors flex-shrink-0"
+                featuredProducts.slice(0, 4).map((p) => {
+                  const displayImg = (p.images && p.images[0]) || p.image;
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between p-2.5 rounded-2xl bg-[#FAF8F5] border border-[#E7E5E0] text-xs"
                     >
-                      +10 Units
-                    </button>
-                  </div>
-                ))
+                      <div className="flex items-center gap-2.5 truncate mr-2">
+                        {displayImg && (
+                          <img
+                            src={displayImg}
+                            alt={p.name}
+                            className="w-8 h-10 object-cover rounded-lg flex-shrink-0"
+                          />
+                        )}
+                        <div className="truncate">
+                          <p className="font-semibold truncate text-[#1E2329]">{p.name}</p>
+                          <span className="text-[10px] text-[#0F766E] font-mono font-bold">
+                            {formatPrice(p.price)}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => toggleFeatured(p.id)}
+                        className="p-1 text-amber-500 hover:scale-110 transition-transform"
+                        title="Remove from featured"
+                      >
+                        <Star className="w-4 h-4 fill-amber-400" />
+                      </button>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
@@ -255,7 +272,7 @@ export default function DashboardOverview({ onViewOrderDetails }) {
               onClick={() => setAdminSection('inventory')}
               className="w-full py-2.5 rounded-xl text-xs font-semibold text-[#0F766E] hover:bg-[#0F766E]/5 border border-[#0F766E]/20 transition-colors"
             >
-              Go to Inventory Management →
+              Manage All Inventory →
             </button>
           </div>
         </div>

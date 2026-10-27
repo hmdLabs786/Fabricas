@@ -4,11 +4,10 @@ import { ArrowRight, Sparkles, MapPin, ShieldCheck, Truck, Clock } from 'lucide-
 import WhatsAppIcon from '../common/WhatsAppIcon';
 
 export default function Hero() {
-  const { setCurrentView, setSelectedCategory, settings } = useStore();
+  const { setCurrentView, settings } = useStore();
 
   const handleExplore = () => {
     setCurrentView('shop');
-    setSelectedCategory('All');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

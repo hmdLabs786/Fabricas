@@ -36,44 +36,32 @@ export default function App() {
     currentView,
     setCurrentView,
     adminSection,
-    products,
-    allCategories,
-    selectedCategory,
-    setSelectedCategory
+    products
   } = useStore();
 
-  // Filter States (ONLY Sort & In Stock Only)
-  const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
 
   // Admin order inspection state
   const [inspectedOrder, setInspectedOrder] = useState(null);
 
-  // Filtered Products for Shop Page
+  // Filtered / Sorted Products for Shop Page
   const filteredProducts = useMemo(() => {
-    return products
-      .filter((product) => {
-        const matchesCategory =
-          selectedCategory === 'All' || product.category === selectedCategory;
-        const matchesStock = inStockOnly ? product.stock > 0 : true;
-        return matchesCategory && matchesStock;
-      })
-      .sort((a, b) => {
-        if (sortBy === 'featured') {
-          return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
-        }
-        if (sortBy === 'newest') {
-          return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-        }
-        if (sortBy === 'price-asc') {
-          return a.price - b.price;
-        }
-        if (sortBy === 'price-desc') {
-          return b.price - a.price;
-        }
-        return 0;
-      });
-  }, [products, selectedCategory, inStockOnly, sortBy]);
+    return [...products].sort((a, b) => {
+      if (sortBy === 'featured') {
+        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+      }
+      if (sortBy === 'newest') {
+        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+      }
+      if (sortBy === 'price-asc') {
+        return a.price - b.price;
+      }
+      if (sortBy === 'price-desc') {
+        return b.price - a.price;
+      }
+      return 0;
+    });
+  }, [products, sortBy]);
 
   // Home Page Products: STRICTLY MAXIMUM 4 PRODUCTS
   const homeProducts = useMemo(() => {
@@ -82,7 +70,6 @@ export default function App() {
 
   const handleShowMoreClick = () => {
     setCurrentView('shop');
-    setSelectedCategory('All');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -152,49 +139,20 @@ export default function App() {
 
           <main className="flex-1">
             {/* Shop Page Header */}
-            <div className="py-10 bg-white border-b border-[#E7E5E0] text-center space-y-2">
+            <div className="py-12 bg-white border-b border-[#E7E5E0] text-center space-y-2">
               <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
-                All Garments
+                Karachi Atelier
               </span>
-              <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#1E2329]">
-                {selectedCategory === 'All' ? 'Shop All Collections' : selectedCategory}
+              <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-[#1E2329]">
+                Complete Collection
               </h1>
               <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto">
-                Discover everyday elegance, unstitched collections, and ready-to-wear kurtas.
+                Explore everyday elegance, handcrafted kurtas, unstitched fabrics, and bespoke silhouettes.
               </p>
-
-              {/* Category selector pills */}
-              <div className="flex items-center justify-center gap-2 pt-4 flex-wrap max-w-2xl mx-auto px-4">
-                <button
-                  onClick={() => setSelectedCategory('All')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                    selectedCategory === 'All'
-                      ? 'bg-[#0F766E] text-white shadow-xs font-semibold'
-                      : 'bg-[#FAF8F5] text-[#64748B] border border-[#E7E5E0] hover:text-[#1E2329]'
-                  }`}
-                >
-                  All
-                </button>
-                {allCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      selectedCategory === cat
-                        ? 'bg-[#0F766E] text-white shadow-xs font-semibold'
-                        : 'bg-[#FAF8F5] text-[#64748B] border border-[#E7E5E0] hover:text-[#1E2329]'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
             </div>
 
-            {/* Product Filter: Strictly Sort and In Stock Only */}
+            {/* Product Filter: Clean Sort and Results Count */}
             <ProductFilter
-              inStockOnly={inStockOnly}
-              onInStockChange={setInStockOnly}
               sortBy={sortBy}
               onSortChange={setSortBy}
               totalResults={filteredProducts.length}

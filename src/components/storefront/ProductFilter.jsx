@@ -1,9 +1,7 @@
 import React from 'react';
-import { ArrowUpDown, Check } from 'lucide-react';
+import { ArrowUpDown, Sparkles } from 'lucide-react';
 
 export default function ProductFilter({
-  inStockOnly,
-  onInStockChange,
   sortBy,
   onSortChange,
   totalResults = 0
@@ -13,43 +11,31 @@ export default function ProductFilter({
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         
         {/* Results Count */}
-        <span className="text-xs font-medium text-[#64748B] tracking-wide">
-          Showing <strong className="text-[#1E2329] font-bold">{totalResults}</strong> items
-        </span>
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-[#C87D55]" />
+          <span className="text-xs font-medium text-[#64748B] tracking-wide">
+            Showing <strong className="text-[#1E2329] font-bold">{totalResults}</strong> curated piece{totalResults !== 1 ? 's' : ''}
+          </span>
+        </div>
 
-        {/* Right side: Sort and In Stock Only (Strictly only these two controls) */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          
-          {/* In Stock Only Checkbox */}
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={inStockOnly}
-              onChange={(e) => onInStockChange(e.target.checked)}
-              className="w-4 h-4 rounded border-[#D1D5DB] text-[#0F766E] focus:ring-0 accent-[#0F766E] cursor-pointer"
-            />
-            <span className="text-xs font-medium text-[#475569]">
-              In Stock Only
-            </span>
-          </label>
-
-          {/* Sort Dropdown */}
-          <div className="flex items-center gap-2 border border-[#E7E5E0] bg-white rounded-full px-3.5 py-1.5 shadow-2xs">
+        {/* Right side: Sort Dropdown */}
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-[#64748B] hidden sm:inline">Sort:</span>
+          <div className="flex items-center gap-2 border border-[#E7E5E0] bg-white rounded-full px-4 py-1.5 shadow-2xs hover:border-[#0F766E]/40 transition-colors">
             <ArrowUpDown className="w-3.5 h-3.5 text-[#0F766E]" />
             <label htmlFor="shop-sort" className="sr-only">Sort products</label>
             <select
               id="shop-sort"
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value)}
-              className="bg-transparent text-xs font-medium text-[#1E2329] focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-semibold text-[#1E2329] focus:outline-none cursor-pointer"
             >
-              <option value="featured">Featured</option>
-              <option value="newest">Newest First</option>
+              <option value="featured">Featured Archive</option>
+              <option value="newest">Newest Arrivals</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
             </select>
           </div>
-
         </div>
 
       </div>

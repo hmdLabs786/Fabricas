@@ -4,15 +4,6 @@ export const DEFAULT_PRODUCTS = [];
 
 export const DEFAULT_ORDERS = [];
 
-export const DEFAULT_CATEGORIES = [
-  "Ready to Wear",
-  "Kurtas",
-  "Unstitched",
-  "Bottoms",
-  "Shawls & Dupattas",
-  "Accessories"
-];
-
 export const DEFAULT_SETTINGS = {
   storeName: "Fabricas",
   tagline: "Karachi's Modern Clothing Destination",
@@ -25,8 +16,7 @@ export const DEFAULT_SETTINGS = {
   freeShippingThreshold: 3500,
   promoBannerText: "FREE EXPRESS DELIVERY ACROSS KARACHI ON ORDERS OVER RS. 3,500 — ORDER VIA WHATSAPP",
   promoBannerEnabled: true,
-  adminUsername: "admin",
-  categories: DEFAULT_CATEGORIES
+  adminUsername: "admin"
 };
 
 export const INITIAL_ACTIVITY_LOG = [

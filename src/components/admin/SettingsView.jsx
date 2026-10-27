@@ -6,28 +6,22 @@ import {
   ShieldCheck,
   Download,
   Save,
-  Plus,
   Trash2,
   Phone,
   Mail,
-  RefreshCw,
-  FolderTree
+  RefreshCw
 } from 'lucide-react';
 
 export default function SettingsView() {
   const {
     settings,
     updateSettings,
-    allCategories,
-    addCategory,
-    removeCategory,
     resetDemoData,
     exportDataJSON
   } = useStore();
 
   const [form, setForm] = useState({ ...settings });
   const [hasChanges, setHasChanges] = useState(false);
-  const [newCatInput, setNewCatInput] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,14 +38,6 @@ export default function SettingsView() {
       freeShippingThreshold: Number(form.freeShippingThreshold || 0)
     });
     setHasChanges(false);
-  };
-
-  const handleAddCat = (e) => {
-    e.preventDefault();
-    if (newCatInput.trim()) {
-      addCategory(newCatInput.trim());
-      setNewCatInput('');
-    }
   };
 
   const handleResetData = () => {
@@ -195,65 +181,7 @@ export default function SettingsView() {
           </div>
         </div>
 
-        {/* Module 2: Category Management (Populates Navbar Sub-menu) */}
-        <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-5">
-          <div className="flex items-center gap-3 border-b border-[#E7E5E0] pb-4">
-            <div className="p-2 rounded-xl bg-[#0F766E]/10 text-[#0F766E]">
-              <FolderTree className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-display font-bold text-[#1E2329]">
-                Shop Sub-Menu & Catalog Categories
-              </h3>
-              <p className="text-xs text-[#64748B]">
-                Categories configured here automatically appear in the storefront's "Shop" dropdown menu.
-              </p>
-            </div>
-          </div>
-
-          {/* Add Category */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newCatInput}
-              onChange={(e) => setNewCatInput(e.target.value)}
-              placeholder="Add new category (e.g. Silk Tunics, Shawls, Western)"
-              className="flex-1 px-3 py-2 text-xs rounded-xl bg-white border border-[#E7E5E0] focus:outline-none focus:border-[#0F766E]"
-            />
-            <button
-              type="button"
-              onClick={handleAddCat}
-              className="px-5 py-2 rounded-xl bg-[#0F766E] text-white text-xs font-semibold hover:bg-[#0D5C58] flex items-center gap-1.5"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Category</span>
-            </button>
-          </div>
-
-          {/* Category Pills list */}
-          <div className="flex flex-wrap gap-2 pt-1">
-            {allCategories.map((cat) => (
-              <div
-                key={cat}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E7E5E0] text-xs font-medium text-[#1E2329]"
-              >
-                <span>{cat}</span>
-                {allCategories.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeCategory(cat)}
-                    className="text-[#94A3B8] hover:text-rose-600 p-0.5"
-                    title={`Remove ${cat}`}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Module 3: Delivery Rules & Currency */}
+        {/* Module 2: Delivery Rules & Currency */}
         <div className="p-6 rounded-2xl bg-white border border-[#E7E5E0] shadow-xs space-y-5">
           <div className="flex items-center gap-3 border-b border-[#E7E5E0] pb-4">
             <div className="p-2 rounded-xl bg-amber-50 text-amber-600">

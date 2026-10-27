@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { Heart, Eye, ShoppingBag } from 'lucide-react';
+import { Heart, Eye, ShoppingBag, Sparkles } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const {
@@ -13,13 +13,14 @@ export default function ProductCard({ product }) {
 
   const [isHovered, setIsHovered] = useState(false);
   const isSaved = wishlist.includes(product.id);
-  const isSoldOut = product.stock <= 0;
-  const isLowStock = product.stock > 0 && product.stock < 5;
   const hasSale = product.comparePrice && product.comparePrice > product.price;
+
+  // Use primary cover image and optional secondary hover image
+  const displayImage = (product.images && product.images[0]) || product.image;
+  const hoverImage = (product.images && product.images[1]) || product.hoverImage;
 
   const handleQuickAdd = (e, size) => {
     e.stopPropagation();
-    if (isSoldOut) return;
     const defaultColor = product.hasColors && product.colors ? product.colors[0]?.name : '';
     addToCart(product, size, defaultColor, 1);
   };
@@ -35,19 +36,19 @@ export default function ProductCard({ product }) {
         onClick={() => openQuickView(product)}
         className="relative aspect-[3/4] w-full overflow-hidden bg-[#F1EFEA] cursor-pointer"
       >
-        {product.image ? (
+        {displayImage ? (
           <>
             <img
-              src={product.image}
+              src={displayImage}
               alt={product.name}
               className={`h-full w-full object-cover object-center transition-all duration-500 ease-out ${
-                product.hoverImage && isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                hoverImage && isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
               }`}
               loading="lazy"
             />
-            {product.hoverImage && (
+            {hoverImage && (
               <img
-                src={product.hoverImage}
+                src={hoverImage}
                 alt={`${product.name} alternate view`}
                 className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-500 ease-out ${
                   isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
@@ -63,19 +64,15 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Top Badges */}
+        {/* Top Badges (High-fashion editorial badges: Sale, New, or Handcrafted) */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
-          {isSoldOut ? (
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#1E2329]/90 text-white backdrop-blur-md">
-              Sold Out
+          {hasSale ? (
+            <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#C87D55] text-white shadow-xs">
+              Special Price
             </span>
-          ) : isLowStock ? (
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-amber-600 text-white shadow-xs">
-              Only {product.stock} Left
-            </span>
-          ) : hasSale ? (
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#C87D55] text-white">
-              Sale
+          ) : product.isNew ? (
+            <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#0F766E] text-white shadow-xs">
+              New Arrival
             </span>
           ) : null}
         </div>
@@ -113,7 +110,7 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Quick Add Size Overlay (ONLY IF PRODUCT HAS SIZES) */}
-        {!isSoldOut && product.hasSizes && product.sizes && product.sizes.length > 0 && (
+        {product.hasSizes && product.sizes && product.sizes.length > 0 && (
           <div className="absolute inset-x-0 bottom-0 p-2.5 bg-white/95 backdrop-blur-md border-t border-[#E7E5E0] translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
             <p className="text-[10px] text-[#64748B] uppercase font-mono tracking-wider text-center mb-1">
               Select Size
@@ -123,7 +120,7 @@ export default function ProductCard({ product }) {
                 <button
                   key={size}
                   onClick={(e) => handleQuickAdd(e, size)}
-                  className="px-2 py-0.5 text-[11px] font-mono font-medium rounded border border-[#E7E5E0] bg-white hover:bg-[#0F766E] hover:border-[#0F766E] hover:text-white text-[#1E2329] transition-all"
+                  className="px-2.5 py-1 text-[11px] font-mono font-medium rounded-lg border border-[#E7E5E0] bg-white hover:bg-[#0F766E] hover:border-[#0F766E] hover:text-white text-[#1E2329] transition-all"
                   title={`Add size ${size} to bag`}
                 >
                   {size}
@@ -137,11 +134,17 @@ export default function ProductCard({ product }) {
       {/* Product Details */}
       <div className="p-4 flex flex-col justify-between flex-1 space-y-2">
         <div>
-          {/* Category & Color / Fabric Info */}
+          {/* Fabric / Color Info Header (No category) */}
           <div className="flex items-center justify-between text-[11px] text-[#64748B] mb-1">
-            <span className="uppercase font-mono tracking-wider font-medium text-[#0F766E]">
-              {product.category || 'Clothing'}
-            </span>
+            {product.hasFabric && product.fabric ? (
+              <span className="text-[11px] font-medium text-[#0F766E] truncate max-w-[170px]">
+                {product.fabric}
+              </span>
+            ) : (
+              <span className="text-[10px] uppercase font-mono tracking-wider text-[#64748B]">
+                Karachi Silhouette
+              </span>
+            )}
 
             {/* Color preview dots (if enabled) */}
             {product.hasColors && product.colors && product.colors.length > 0 && (
@@ -156,13 +159,6 @@ export default function ProductCard({ product }) {
                 ))}
               </div>
             )}
-
-            {/* Fabric note (if enabled and no colors) */}
-            {(!product.hasColors || !product.colors?.length) && product.hasFabric && product.fabric && (
-              <span className="text-[10px] text-[#64748B] truncate max-w-[100px]">
-                {product.fabric}
-              </span>
-            )}
           </div>
 
           {/* Product Title */}
@@ -175,7 +171,7 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Pricing & Add to Bag (if no sizes needed) */}
-        <div className="pt-1 border-t border-[#F1EFE9] flex items-center justify-between">
+        <div className="pt-2 border-t border-[#F1EFE9] flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className="text-sm font-bold text-[#1E2329] font-mono">
               {formatPrice(product.price)}
@@ -190,16 +186,11 @@ export default function ProductCard({ product }) {
           {/* If product does NOT require sizes, a 1-click Add to Bag button */}
           {!product.hasSizes && (
             <button
-              disabled={isSoldOut}
               onClick={(e) => {
                 e.stopPropagation();
                 addToCart(product, null, null, 1);
               }}
-              className={`p-2 rounded-xl transition-all ${
-                isSoldOut
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E] hover:text-white'
-              }`}
+              className="p-2 rounded-xl transition-all bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E] hover:text-white"
               title="Add to Bag"
             >
               <ShoppingBag className="w-4 h-4" />

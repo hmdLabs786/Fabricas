@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import Logo from '../common/Logo';
 import {
@@ -6,29 +6,22 @@ import {
   Heart,
   Truck,
   Menu,
-  X,
-  ChevronDown,
-  ArrowRight
+  X
 } from 'lucide-react';
 
 export default function Navbar() {
   const {
     currentView,
     setCurrentView,
-    selectedCategory,
-    setSelectedCategory,
     cartItemCount,
     wishlist,
-    allCategories,
     setIsCartOpen,
     setIsWishlistOpen,
     setIsTrackOrderOpen
   } = useStore();
 
-  const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const dropdownRef = useRef(null);
 
   // Scroll listener for sticky navbar elevation
   useEffect(() => {
@@ -39,22 +32,9 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsShopDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleNavClick = (view, category = 'All') => {
+  const handleNavClick = (view) => {
     setCurrentView(view);
-    setSelectedCategory(category);
     setIsMobileMenuOpen(false);
-    setIsShopDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -87,7 +67,7 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Center: Desktop Navigation (Home, Shop + Submenus, Contact) */}
+          {/* Center: Desktop Navigation (Home, Shop, Contact) */}
           <nav className="hidden lg:flex items-center gap-8">
             {/* Home */}
             <button
@@ -100,67 +80,24 @@ export default function Navbar() {
             >
               Home
               {currentView === 'home' && (
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full" />
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full animate-in fade-in" />
               )}
             </button>
 
-            {/* Shop with Category Sub-menus */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => handleNavClick('shop', 'All')}
-                onMouseEnter={() => setIsShopDropdownOpen(true)}
-                className={`flex items-center gap-1.5 text-sm tracking-wide font-medium transition-colors py-2 relative ${
-                  currentView === 'shop'
-                    ? 'text-[#0F766E] font-semibold'
-                    : 'text-[#475569] hover:text-[#0F766E]'
-                }`}
-              >
-                <span>Shop</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isShopDropdownOpen ? 'rotate-180 text-[#0F766E]' : ''}`} />
-                {currentView === 'shop' && (
-                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full" />
-                )}
-              </button>
-
-              {/* Sub-menu Dropdown */}
-              {isShopDropdownOpen && (
-                <div
-                  onMouseLeave={() => setIsShopDropdownOpen(false)}
-                  className="absolute top-full left-0 w-56 pt-2 z-40 animate-in fade-in slide-in-from-top-1 duration-200"
-                >
-                  <div className="bg-white rounded-2xl shadow-xl border border-[#E7E5E0] p-2 space-y-1">
-                    <button
-                      onClick={() => handleNavClick('shop', 'All')}
-                      className={`w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${
-                        selectedCategory === 'All' && currentView === 'shop'
-                          ? 'bg-[#0F766E]/10 text-[#0F766E] font-semibold'
-                          : 'text-[#334155] hover:bg-[#F8F7F4]'
-                      }`}
-                    >
-                      <span>All Collections</span>
-                      <ArrowRight className="w-3 h-3 opacity-60" />
-                    </button>
-
-                    <div className="my-1 border-t border-[#F1EFE9]" />
-
-                    {allCategories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => handleNavClick('shop', cat)}
-                        className={`w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${
-                          selectedCategory === cat && currentView === 'shop'
-                            ? 'bg-[#0F766E]/10 text-[#0F766E] font-semibold'
-                            : 'text-[#334155] hover:bg-[#F8F7F4]'
-                        }`}
-                      >
-                        <span>{cat}</span>
-                        <ArrowRight className="w-3 h-3 opacity-40" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+            {/* Shop (Direct link, no categories) */}
+            <button
+              onClick={() => handleNavClick('shop')}
+              className={`text-sm tracking-wide font-medium transition-colors py-2 relative ${
+                currentView === 'shop'
+                  ? 'text-[#0F766E] font-semibold'
+                  : 'text-[#475569] hover:text-[#0F766E]'
+              }`}
+            >
+              Shop
+              {currentView === 'shop' && (
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full animate-in fade-in" />
               )}
-            </div>
+            </button>
 
             {/* Contact */}
             <button
@@ -173,7 +110,7 @@ export default function Navbar() {
             >
               Contact
               {currentView === 'contact' && (
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full" />
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0F766E] rounded-full animate-in fade-in" />
               )}
             </button>
           </nav>
@@ -240,27 +177,13 @@ export default function Navbar() {
             </button>
 
             <button
-              onClick={() => handleNavClick('shop', 'All')}
-              className={`text-left py-2 text-sm font-semibold transition-colors flex items-center justify-between ${
+              onClick={() => handleNavClick('shop')}
+              className={`text-left py-2 text-sm font-semibold transition-colors ${
                 currentView === 'shop' ? 'text-[#0F766E]' : 'text-[#334155]'
               }`}
             >
-              <span>Shop All</span>
-              <ArrowRight className="w-4 h-4 opacity-50" />
+              Shop Collection
             </button>
-
-            {/* Mobile Categories list */}
-            <div className="pl-3 border-l-2 border-[#0F766E]/30 space-y-2 py-1">
-              {allCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => handleNavClick('shop', cat)}
-                  className="block text-left text-xs text-[#64748B] hover:text-[#0F766E] py-1"
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
 
             <button
               onClick={() => handleNavClick('contact')}
@@ -268,7 +191,7 @@ export default function Navbar() {
                 currentView === 'contact' ? 'text-[#0F766E]' : 'text-[#334155]'
               }`}
             >
-              Contact Us
+              Contact Concierge
             </button>
           </div>
         </div>

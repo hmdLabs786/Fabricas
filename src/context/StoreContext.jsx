@@ -38,8 +38,20 @@ export function StoreProvider({ children }) {
     safeSetStorage('fabricas_settings', settings);
   }, [settings]);
 
-  // 2. Products State (No dummy data by default)
-  const [products, setProducts] = useState(() => safeGetStorage('fabricas_products', DEFAULT_PRODUCTS));
+  // 2. Products State (Auto-sync official 11-product catalog across all devices)
+  const [products, setProducts] = useState(() => {
+    const CATALOG_VERSION = 'v1.2-official-11-products';
+    const storedVersion = localStorage.getItem('fabricas_catalog_ver');
+    const stored = safeGetStorage('fabricas_products', null);
+
+    // If version updated, or nothing stored, or empty array, seed with DEFAULT_PRODUCTS
+    if (storedVersion !== CATALOG_VERSION || !Array.isArray(stored) || stored.length === 0) {
+      localStorage.setItem('fabricas_catalog_ver', CATALOG_VERSION);
+      safeSetStorage('fabricas_products', DEFAULT_PRODUCTS);
+      return DEFAULT_PRODUCTS;
+    }
+    return stored;
+  });
 
   useEffect(() => {
     safeSetStorage('fabricas_products', products);
@@ -404,18 +416,18 @@ Total Payable: Rs. ${cartTotal.toLocaleString()} (Cash on Delivery)`;
   };
 
   const resetDemoData = () => {
-    setProducts([]);
+    setProducts(DEFAULT_PRODUCTS);
     setOrders([]);
     setCart([]);
     setWishlist([]);
     setSettings(DEFAULT_SETTINGS);
-    localStorage.removeItem('fabricas_products');
+    safeSetStorage('fabricas_products', DEFAULT_PRODUCTS);
     localStorage.removeItem('fabricas_orders');
     localStorage.removeItem('fabricas_cart');
     localStorage.removeItem('fabricas_wishlist');
     localStorage.removeItem('fabricas_settings');
-    logActivity('Catalog and settings reset', 'system');
-    showToast('Clean state restored successfully', 'info');
+    logActivity('Official 11-product catalog restored', 'system');
+    showToast('Official catalog restored successfully', 'info');
   };
 
   const exportDataJSON = () => {

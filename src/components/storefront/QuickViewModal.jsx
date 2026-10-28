@@ -217,7 +217,7 @@ export default function QuickViewModal() {
                   <span className="font-bold text-[#C87D55] block text-[10px] uppercase tracking-wider">
                     Package / Styling Note:
                   </span>
-                  <p className="text-[#334155]">{product.customNote}</p>
+                  <p className="text-[#334155] whitespace-pre-line leading-relaxed">{product.customNote}</p>
                 </div>
               )}
 

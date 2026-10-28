@@ -38,23 +38,31 @@ export function StoreProvider({ children }) {
     safeSetStorage('fabricas_settings', settings);
   }, [settings]);
 
-  // 2. Products State (Auto-sync official 11-product catalog across all devices)
+  // 2. Products State (Instant in-memory catalog, purging any legacy bloated base64 storage)
   const [products, setProducts] = useState(() => {
-    const CATALOG_VERSION = 'v1.2-official-11-products';
+    try {
+      const raw = localStorage.getItem('fabricas_products');
+      if (raw && (raw.includes('data:image/') || raw.length > 300000)) {
+        localStorage.removeItem('fabricas_products');
+      }
+    } catch (e) {}
+
+    const CATALOG_VERSION = 'v1.3-fast-catalog';
     const storedVersion = localStorage.getItem('fabricas_catalog_ver');
     const stored = safeGetStorage('fabricas_products', null);
 
-    // If version updated, or nothing stored, or empty array, seed with DEFAULT_PRODUCTS
     if (storedVersion !== CATALOG_VERSION || !Array.isArray(stored) || stored.length === 0) {
       localStorage.setItem('fabricas_catalog_ver', CATALOG_VERSION);
-      safeSetStorage('fabricas_products', DEFAULT_PRODUCTS);
       return DEFAULT_PRODUCTS;
     }
     return stored;
   });
 
   useEffect(() => {
-    safeSetStorage('fabricas_products', products);
+    // Only write to localStorage if products differ from default (e.g. admin created/updated products)
+    if (products !== DEFAULT_PRODUCTS) {
+      safeSetStorage('fabricas_products', products);
+    }
   }, [products]);
 
   // 3. Orders State (No dummy orders by default)

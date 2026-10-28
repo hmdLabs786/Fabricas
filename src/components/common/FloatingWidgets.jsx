@@ -9,14 +9,19 @@ export default function FloatingWidgets() {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const nextShow = scrollY > 300;
+          setShowScrollTop(prev => (prev !== nextShow ? nextShow : prev));
+          const nextHasScrolled = scrollY > 50;
+          setHasScrolled(prev => (prev !== nextHasScrolled ? nextHasScrolled : prev));
+          ticking = false;
+        });
+        ticking = true;
       }
-      setHasScrolled(scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);

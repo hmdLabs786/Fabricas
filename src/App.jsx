@@ -196,8 +196,6 @@ export default function App() {
               onClose={() => setInspectedOrder(null)}
             />
           )}
-
-          <QuickViewModal />
         </AdminLayout>
       )}
 

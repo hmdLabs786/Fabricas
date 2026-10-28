@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { X, Heart, ShoppingBag, Truck, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Heart, ShoppingBag, Truck, ShieldCheck, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import CircularZoomImage from '../common/CircularZoomImage';
 
 export default function QuickViewModal() {
   const {
@@ -24,6 +25,38 @@ export default function QuickViewModal() {
         ? product.images
         : [product.image, product.hoverImage].filter(Boolean))
     : [];
+
+  const currentIndex = Math.max(0, productImages.indexOf(activeImage));
+
+  const handlePrevImage = useCallback((e) => {
+    e?.stopPropagation();
+    if (productImages.length <= 1) return;
+    const prevIdx = (currentIndex - 1 + productImages.length) % productImages.length;
+    setActiveImage(productImages[prevIdx]);
+  }, [currentIndex, productImages]);
+
+  const handleNextImage = useCallback((e) => {
+    e?.stopPropagation();
+    if (productImages.length <= 1) return;
+    const nextIdx = (currentIndex + 1) % productImages.length;
+    setActiveImage(productImages[nextIdx]);
+  }, [currentIndex, productImages]);
+
+  // Keyboard navigation: Left/Right arrows cycle images, Escape closes modal
+  useEffect(() => {
+    if (!isQuickViewOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        handlePrevImage();
+      } else if (e.key === 'ArrowRight') {
+        handleNextImage();
+      } else if (e.key === 'Escape') {
+        setIsQuickViewOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isQuickViewOpen, handlePrevImage, handleNextImage, setIsQuickViewOpen]);
 
   useEffect(() => {
     if (product) {
@@ -60,52 +93,87 @@ export default function QuickViewModal() {
 
         <div className="overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2">
           
-          {/* Left: Product Imagery Gallery */}
+          {/* Left: Product Imagery Gallery with Circular Hover Zoom & Navigation Arrows */}
           <div className="bg-[#FAF8F5] p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E7E5E0]">
             <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden relative shadow-sm bg-white">
               {activeImage ? (
-                <img
+                <CircularZoomImage
                   src={activeImage}
                   alt={product.name}
-                  className="w-full h-full object-cover object-center transition-all duration-300"
-                />
+                  zoomScale={2.5}
+                  lensSize={175}
+                  className="w-full h-full"
+                >
+                  {/* Left & Right Image Navigation Arrows */}
+                  {productImages.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E2329] shadow-lg border border-[#E7E5E0] hover:scale-110 active:scale-95 transition-all"
+                        aria-label="Previous image"
+                        title="Previous photo (Left Arrow key)"
+                      >
+                        <ChevronLeft className="w-4 h-4 text-[#1E2329]" />
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E2329] shadow-lg border border-[#E7E5E0] hover:scale-110 active:scale-95 transition-all"
+                        aria-label="Next image"
+                        title="Next photo (Right Arrow key)"
+                      >
+                        <ChevronRight className="w-4 h-4 text-[#1E2329]" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Photo Counter Badge */}
+                  {productImages.length > 1 && (
+                    <div className="absolute top-3 right-3 z-10">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wider font-semibold bg-black/60 text-white backdrop-blur-md shadow-xs">
+                        {currentIndex + 1} / {productImages.length}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Special Badges */}
+                  <div className="absolute top-3 left-3 z-10">
+                    {hasSale ? (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#C87D55] text-white shadow-xs">
+                        Special Price
+                      </span>
+                    ) : product.isNew ? (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#0F766E] text-white shadow-xs">
+                        New Arrival
+                      </span>
+                    ) : null}
+                  </div>
+                </CircularZoomImage>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-[#94A3B8]">
                   <ShoppingBag className="w-12 h-12 opacity-30" />
                 </div>
               )}
-
-              {/* Special Badges */}
-              <div className="absolute top-3 left-3">
-                {hasSale ? (
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#C87D55] text-white shadow-xs">
-                    Special Price
-                  </span>
-                ) : product.isNew ? (
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-wider font-bold bg-[#0F766E] text-white shadow-xs">
-                    New Arrival
-                  </span>
-                ) : null}
-              </div>
             </div>
 
             {/* Thumbnail switcher gallery (supports multiple images) */}
             {productImages.length > 1 && (
-              <div className="flex gap-2.5 mt-4 overflow-x-auto pb-1 pt-1">
+              <div className="flex gap-2.5 mt-4 overflow-x-auto pb-1 pt-1 scrollbar-thin">
                 {productImages.map((imgUrl, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImage(imgUrl)}
                     className={`relative w-14 h-18 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                       activeImage === imgUrl
-                        ? 'border-[#0F766E] shadow-sm scale-102'
-                        : 'border-transparent opacity-60 hover:opacity-100'
+                        ? 'border-[#0F766E] shadow-sm scale-105'
+                        : 'border-transparent opacity-60 hover:opacity-100 hover:scale-102'
                     }`}
+                    title={`View photo ${index + 1}`}
                   >
                     <img
                       src={imgUrl}
                       alt={`Angle ${index + 1}`}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </button>
                 ))}

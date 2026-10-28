@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { Heart, Eye, ShoppingBag, Sparkles } from 'lucide-react';
+import { Heart, Eye, ShoppingBag, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const {
@@ -11,13 +11,29 @@ export default function ProductCard({ product }) {
     toggleWishlist
   } = useStore();
 
-  const [isHovered, setIsHovered] = useState(false);
   const isSaved = (wishlist || []).includes(product.id);
   const hasSale = product.comparePrice && product.comparePrice > product.price;
 
-  // Use primary cover image and optional secondary hover image
-  const displayImage = (product.images && product.images[0]) || product.image;
-  const hoverImage = (product.images && product.images[1]) || product.hoverImage;
+  // Collect all images for the product card
+  const images = (Array.isArray(product.images) && product.images.length > 0)
+    ? product.images
+    : [product.image, product.hoverImage].filter(Boolean);
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  const currentImage = images[activeIdx] || product.image || '';
+  const hoverPreviewImage = activeIdx === 0 && images.length > 1 ? images[1] : null;
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    if (images.length <= 1) return;
+    setActiveIdx((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    if (images.length <= 1) return;
+    setActiveIdx((prev) => (prev + 1) % images.length);
+  };
 
   const handleQuickAdd = (e, size) => {
     e.stopPropagation();
@@ -26,34 +42,30 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div
-      className="group relative flex flex-col bg-white rounded-2xl border border-[#E7E5E0] overflow-hidden luxury-card-hover shadow-sm"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="group relative flex flex-col bg-white rounded-2xl border border-[#E7E5E0] overflow-hidden luxury-card-hover shadow-sm transition-all duration-300">
       {/* Product Image Container */}
       <div
         onClick={() => openQuickView(product)}
         className="relative aspect-[3/4] w-full overflow-hidden bg-[#F1EFEA] cursor-pointer"
       >
-        {displayImage ? (
+        {currentImage ? (
           <>
             <img
-              src={displayImage}
+              src={currentImage}
               alt={product.name}
               className={`h-full w-full object-cover object-center transition-all duration-500 ease-out ${
-                hoverImage && isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                hoverPreviewImage ? 'group-hover:opacity-0 group-hover:scale-105' : 'group-hover:scale-105'
               }`}
               loading="lazy"
+              decoding="async"
             />
-            {hoverImage && (
+            {hoverPreviewImage && (
               <img
-                src={hoverImage}
+                src={hoverPreviewImage}
                 alt={`${product.name} alternate view`}
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-500 ease-out ${
-                  isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100'
-                }`}
+                className="absolute inset-0 h-full w-full object-cover object-center transition-all duration-500 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-105"
                 loading="lazy"
+                decoding="async"
               />
             )}
           </>
@@ -62,6 +74,43 @@ export default function ProductCard({ product }) {
             <ShoppingBag className="w-8 h-8 opacity-40 mb-1" />
             <span className="text-xs">No image provided</span>
           </div>
+        )}
+
+        {/* Image Navigation Arrows (Appear on card hover or mobile) */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={handlePrev}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/95 text-[#1E2329] shadow-md border border-[#E7E5E0] hover:bg-[#0F766E] hover:text-white hover:border-[#0F766E] transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 focus:opacity-100"
+              aria-label="Previous photo"
+              title="Previous photo"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/95 text-[#1E2329] shadow-md border border-[#E7E5E0] hover:bg-[#0F766E] hover:text-white hover:border-[#0F766E] transition-all opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 focus:opacity-100"
+              aria-label="Next photo"
+              title="Next photo"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Pagination Dot Indicator */}
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              {images.slice(0, 5).map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === activeIdx ? 'bg-white w-3' : 'bg-white/50 w-1.5'
+                  }`}
+                />
+              ))}
+              {images.length > 5 && (
+                <span className="text-[8px] text-white/90 font-mono pl-0.5">+{images.length - 5}</span>
+              )}
+            </div>
+          </>
         )}
 
         {/* Top Badges (High-fashion editorial badges: Sale, New, or Handcrafted) */}

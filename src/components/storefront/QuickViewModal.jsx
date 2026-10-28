@@ -73,19 +73,43 @@ export default function QuickViewModal() {
   const isSaved = (wishlist || []).includes(product.id);
   const hasSale = product.comparePrice && product.comparePrice > product.price;
 
+  // Touch swipe support for mobile image switching
+  const touchStartX = React.useRef(null);
+  const touchEndX = React.useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > 35) {
+      handleNextImage(e);
+    } else if (distance < -35) {
+      handlePrevImage(e);
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   const handleAddToBag = () => {
     addToCart(product, selectedSize, selectedColor, quantity);
     setIsQuickViewOpen(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm p-3 sm:p-6 md:p-8 flex items-start justify-center animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-[#E7E5E0] overflow-hidden my-auto max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm p-0 sm:p-4 md:p-6 flex items-end sm:items-center justify-center animate-in fade-in duration-200">
+      <div className="relative w-full max-w-4xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-[#E7E5E0] overflow-hidden max-h-[92vh] sm:max-h-[90vh] flex flex-col">
         
         {/* Close button */}
         <button
           onClick={() => setIsQuickViewOpen(false)}
-          className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#64748B] hover:text-[#1E2329] shadow-md transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 p-2 sm:p-2.5 rounded-full bg-white/95 hover:bg-white text-[#64748B] hover:text-[#1E2329] shadow-md transition-all active:scale-95"
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
@@ -94,8 +118,13 @@ export default function QuickViewModal() {
         <div className="overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2">
           
           {/* Left: Product Imagery Gallery with Circular Hover Zoom & Navigation Arrows */}
-          <div className="bg-[#FAF8F5] p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E7E5E0]">
-            <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden relative shadow-sm bg-white">
+          <div className="bg-[#FAF8F5] p-4 sm:p-6 md:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E7E5E0]">
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              className="aspect-square sm:aspect-[3/4] max-h-[42vh] sm:max-h-none w-full rounded-2xl overflow-hidden relative shadow-sm bg-white touch-pan-y"
+            >
               {activeImage ? (
                 <CircularZoomImage
                   src={activeImage}
@@ -182,8 +211,8 @@ export default function QuickViewModal() {
           </div>
 
           {/* Right: Details & Add to Cart */}
-          <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
-            <div className="space-y-5">
+          <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-between space-y-4 sm:space-y-6">
+            <div className="space-y-4 sm:space-y-5">
               
               {/* Header without Category */}
               <div className="space-y-1">
@@ -337,13 +366,13 @@ export default function QuickViewModal() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-center gap-6 text-[11px] text-[#64748B] pt-1">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-[10px] sm:text-[11px] text-[#64748B] pt-1 text-center">
                 <div className="flex items-center gap-1.5">
-                  <Truck className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <Truck className="w-3.5 h-3.5 text-[#0F766E] flex-shrink-0" />
                   <span>Express Delivery across Pakistan</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E] flex-shrink-0" />
                   <span>100% Quality Guaranteed</span>
                 </div>
               </div>

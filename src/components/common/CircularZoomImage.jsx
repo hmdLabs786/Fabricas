@@ -54,10 +54,10 @@ export default function CircularZoomImage({
         draggable={false}
       />
 
-      {/* Floating Circular Magnifying Glass Lens */}
+      {/* Floating Circular Magnifying Glass Lens (Desktop Hover Only) */}
       {isZooming && (
         <div
-          className="pointer-events-none absolute z-30 rounded-full border-2 border-white/90 shadow-2xl overflow-hidden ring-4 ring-black/15 transition-opacity duration-150"
+          className="hidden md:block pointer-events-none absolute z-30 rounded-full border-2 border-white/90 shadow-2xl overflow-hidden ring-4 ring-black/15 transition-opacity duration-150"
           style={{
             width: `${lensSize}px`,
             height: `${lensSize}px`,
@@ -77,8 +77,8 @@ export default function CircularZoomImage({
         </div>
       )}
 
-      {/* Hint badge: "Hover to Zoom" */}
-      <div className={`absolute bottom-3 left-3 z-10 pointer-events-none transition-opacity duration-300 ${
+      {/* Hint badge: "Hover to Zoom" (Desktop Only) */}
+      <div className={`hidden md:block absolute bottom-3 left-3 z-10 pointer-events-none transition-opacity duration-300 ${
         isZooming ? 'opacity-0' : 'opacity-80'
       }`}>
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wider font-semibold bg-black/60 text-white backdrop-blur-md shadow-xs">

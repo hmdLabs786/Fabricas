@@ -51,8 +51,8 @@ export default function TrackOrderModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#E7E5E0] p-6 sm:p-8 my-8 space-y-6">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-[#E7E5E0] p-5 sm:p-8 my-auto max-h-[92vh] overflow-y-auto space-y-5 sm:space-y-6">
         
         {/* Header */}
         <div className="flex items-start justify-between border-b border-[#E7E5E0] pb-4">

@@ -52,14 +52,14 @@ export default function WhatsAppOrderModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#E7E5E0] p-6 sm:p-8 my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-[#E7E5E0] p-5 sm:p-8 my-auto max-h-[92vh] overflow-y-auto">
         
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-[#E7E5E0]">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#25D366] text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-[#25D366]/25">
-              <WhatsAppIcon className="w-6 h-6 text-white" />
+        <div className="flex items-start justify-between pb-3 sm:pb-4 border-b border-[#E7E5E0]">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-[#25D366] text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-[#25D366]/25">
+              <WhatsAppIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
               <h2 className="text-lg font-display font-bold text-[#1E2329]">

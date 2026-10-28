@@ -35,13 +35,13 @@ export default function FloatingWidgets() {
   const whatsappUrl = `https://wa.me/${rawPhone}?text=${encodeURIComponent('Assalam o Alaikum Fabricas Team! I am browsing your online store and would like some assistance.')}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3.5 pointer-events-none">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-2.5 sm:gap-3.5 pointer-events-none">
       
       {/* Scroll To Top Button with Luxury Hover */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="pointer-events-auto p-3.5 rounded-full bg-white/95 backdrop-blur-md text-[#1E2329] border border-[#E7E5E0] shadow-lg shadow-black/5 hover:border-[#0F766E] hover:text-[#0F766E] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 group"
+          className="pointer-events-auto p-2.5 sm:p-3.5 rounded-full bg-white/95 backdrop-blur-md text-[#1E2329] border border-[#E7E5E0] shadow-lg shadow-black/5 hover:border-[#0F766E] hover:text-[#0F766E] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-95 group"
           title="Scroll to Top"
           aria-label="Scroll to top"
         >
@@ -60,22 +60,22 @@ export default function FloatingWidgets() {
           href={whatsappUrl}
           target="_blank"
           rel="noreferrer"
-          className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] text-white shadow-xl shadow-[#25D366]/35 hover:bg-[#20BA5C] transition-all duration-300 hover:scale-108 active:scale-95"
+          className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white shadow-xl shadow-[#25D366]/35 hover:bg-[#20BA5C] transition-all duration-300 hover:scale-108 active:scale-95"
           title="Chat with Fabricas on WhatsApp (+92 3222567147)"
           aria-label="Chat on WhatsApp"
         >
           {/* Authentic WhatsApp Vector Icon */}
-          <WhatsAppIcon className="w-7 h-7 text-white drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
+          <WhatsAppIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-sm transition-transform duration-300 group-hover:scale-110" />
 
           {/* Active online indicator dot */}
-          <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
+          <span className="absolute top-0 right-0 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-400 border-2 border-white"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-400 border-2 border-white"></span>
           </span>
         </a>
 
-        {/* Luxury Tooltip with Details */}
-        <div className="absolute right-full mr-3.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out">
+        {/* Luxury Tooltip with Details (Desktop Only) */}
+        <div className="hidden sm:block absolute right-full mr-3.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ease-out">
           <div className="bg-[#1E2329]/95 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-xl shadow-2xl border border-white/10 whitespace-nowrap flex flex-col gap-0.5">
             <div className="flex items-center gap-1.5 font-semibold text-[#25D366]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse"></span>

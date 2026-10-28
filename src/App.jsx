@@ -93,8 +93,8 @@ export default function App() {
             <Hero />
 
             {/* Home Products Section: Exactly 4 products + "Show More" Button */}
-            <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center max-w-xl mx-auto mb-12 space-y-3">
+            <section className="py-10 sm:py-20 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+              <div className="text-center max-w-xl mx-auto mb-8 sm:mb-12 space-y-2 sm:space-y-3">
                 <div className="flex items-center justify-center gap-3">
                   <span className="h-[1px] w-8 bg-[#C87D55]/40" />
                   <span className="text-xs font-mono uppercase tracking-[0.25em] font-semibold text-[#0F766E]">
@@ -102,7 +102,7 @@ export default function App() {
                   </span>
                   <span className="h-[1px] w-8 bg-[#C87D55]/40" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-[#1E2329]">
+                <h2 className="text-2xl sm:text-4xl font-display font-extrabold text-[#1E2329]">
                   Featured Pieces
                 </h2>
                 <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto">
@@ -115,10 +115,10 @@ export default function App() {
 
               {/* "Show More" Button Redirecting to Shop Page */}
               {products.length > 0 && (
-                <div className="text-center mt-14">
+                <div className="text-center mt-8 sm:mt-14">
                   <button
                     onClick={handleShowMoreClick}
-                    className="shimmer-hover inline-flex items-center gap-3 px-9 py-4 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold uppercase tracking-widest shadow-lg shadow-[#0F766E]/20 transition-all hover:scale-103 active:scale-97 group"
+                    className="shimmer-hover inline-flex items-center gap-3 px-8 sm:px-9 py-3.5 sm:py-4 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] text-xs font-semibold uppercase tracking-widest shadow-lg shadow-[#0F766E]/20 transition-all hover:scale-103 active:scale-97 group"
                   >
                     <span>Show More Products</span>
                     <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -139,11 +139,11 @@ export default function App() {
 
           <main className="flex-1">
             {/* Shop Page Header */}
-            <div className="py-12 bg-white border-b border-[#E7E5E0] text-center space-y-2">
+            <div className="py-8 sm:py-12 px-4 bg-white border-b border-[#E7E5E0] text-center space-y-2">
               <span className="text-xs font-mono uppercase tracking-[0.2em] font-semibold text-[#0F766E]">
                 Karachi Atelier
               </span>
-              <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-[#1E2329]">
+              <h1 className="text-2xl sm:text-5xl font-display font-extrabold text-[#1E2329]">
                 Complete Collection
               </h1>
               <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto">

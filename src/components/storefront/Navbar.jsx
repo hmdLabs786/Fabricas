@@ -52,16 +52,16 @@ export default function Navbar() {
         ? 'glass-header shadow-sm shadow-black/5 border-b border-[#E7E5E0]/90 py-0'
         : 'bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E7E5E0] py-1'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className={`flex items-center justify-between transition-all duration-300 ${
-          isScrolled ? 'h-16' : 'h-20'
-        } gap-4`}>
+          isScrolled ? 'h-14 sm:h-16' : 'h-16 sm:h-20'
+        } gap-2 sm:gap-4`}>
           
           {/* Left: Mobile Menu Trigger + Brand Logo */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-[#1E2329] hover:bg-black/5 transition-colors"
+              className="lg:hidden p-2 rounded-xl text-[#1E2329] hover:bg-black/5 transition-colors -ml-1 sm:ml-0"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -124,12 +124,12 @@ export default function Navbar() {
           </nav>
 
           {/* Right: Icons (Track Order, Favorites/Wishlist, Cart) */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             
             {/* Track Order Icon Button */}
             <button
               onClick={() => setIsTrackOrderOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-[#E7E5E0] bg-white/80 hover:border-[#0F766E] hover:text-[#0F766E] text-[#1E2329] transition-all text-xs font-medium shadow-2xs hover:scale-102"
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-full border border-[#E7E5E0] bg-white/80 hover:border-[#0F766E] hover:text-[#0F766E] text-[#1E2329] transition-all text-xs font-medium shadow-2xs hover:scale-102"
               title="Track Your Order"
               aria-label="Track Your Order"
             >
@@ -140,7 +140,7 @@ export default function Navbar() {
             {/* Favorites (Wishlist) Icon */}
             <button
               onClick={() => setIsWishlistOpen(true)}
-              className="relative p-2.5 rounded-full border border-[#E7E5E0] bg-white/80 hover:border-[#C87D55] text-[#1E2329] hover:text-[#C87D55] transition-all shadow-2xs hover:scale-105"
+              className="relative p-2 sm:p-2.5 rounded-full border border-[#E7E5E0] bg-white/80 hover:border-[#C87D55] text-[#1E2329] hover:text-[#C87D55] transition-all shadow-2xs hover:scale-105"
               aria-label="Favorites"
               title="Favorite Pieces"
             >
@@ -155,7 +155,7 @@ export default function Navbar() {
             {/* Cart Icon */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] transition-all shadow-md hover:scale-105 active:scale-95 flex items-center justify-center"
+              className="relative p-2 sm:p-2.5 rounded-full bg-[#0F766E] text-white hover:bg-[#0D5C58] transition-all shadow-md hover:scale-105 active:scale-95 flex items-center justify-center"
               aria-label="Shopping Cart"
               title="View Cart"
             >
@@ -173,34 +173,50 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-[#E7E5E0] bg-[#FAF8F5] px-6 py-6 transition-all duration-300">
-          <div className="flex flex-col gap-3">
+        <div className="lg:hidden border-t border-[#E7E5E0] bg-[#FAF8F5] px-5 py-5 transition-all duration-300 shadow-xl animate-in slide-in-from-top-2">
+          <div className="flex flex-col gap-2">
             <button
               onClick={() => handleNavClick('home')}
-              className={`text-left py-2 text-sm font-semibold transition-colors ${
-                currentView === 'home' ? 'text-[#0F766E]' : 'text-[#334155]'
+              className={`text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-between ${
+                currentView === 'home' ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-[#334155] hover:bg-black/5'
               }`}
             >
-              Home
+              <span>Home</span>
+              {currentView === 'home' && <span className="w-2 h-2 rounded-full bg-[#0F766E]" />}
             </button>
 
             <button
               onClick={() => handleNavClick('shop')}
-              className={`text-left py-2 text-sm font-semibold transition-colors ${
-                currentView === 'shop' ? 'text-[#0F766E]' : 'text-[#334155]'
+              className={`text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-between ${
+                currentView === 'shop' ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-[#334155] hover:bg-black/5'
               }`}
             >
-              Shop Collection
+              <span>Shop Collection</span>
+              {currentView === 'shop' && <span className="w-2 h-2 rounded-full bg-[#0F766E]" />}
             </button>
 
             <button
               onClick={() => handleNavClick('contact')}
-              className={`text-left py-2 text-sm font-semibold transition-colors ${
-                currentView === 'contact' ? 'text-[#0F766E]' : 'text-[#334155]'
+              className={`text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-between ${
+                currentView === 'contact' ? 'bg-[#0F766E]/10 text-[#0F766E]' : 'text-[#334155] hover:bg-black/5'
               }`}
             >
-              Contact Concierge
+              <span>Contact Concierge</span>
+              {currentView === 'contact' && <span className="w-2 h-2 rounded-full bg-[#0F766E]" />}
             </button>
+
+            <div className="pt-2 border-t border-[#E7E5E0] mt-1">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsTrackOrderOpen(true);
+                }}
+                className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-[#475569] hover:bg-black/5 transition-colors flex items-center gap-2.5"
+              >
+                <Truck className="w-4 h-4 text-[#0F766E]" />
+                <span>Track Your Order</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
